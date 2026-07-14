@@ -448,7 +448,37 @@ function renderModels(){const models=state.api.models||[]; const options=[state.
 function apiPath(path){return joinApiPath(state.api.baseUrl,path);}
 async function fetchModels(){syncApiFromInputs(); const headers=state.api.key?{Authorization:'Bearer '+state.api.key}:{}; const paths=/\/v1$/i.test(normalizeBaseUrl(state.api.baseUrl))?['/models','/v1/models']:['/v1/models','/models']; let lastErr=''; for(const path of paths){try{const res=await fetch(joinApiPath(state.api.baseUrl,path),{headers}); const text=await res.text(); if(!res.ok){lastErr='HTTP '+res.status+' '+text.slice(0,300); continue;} let data; try{data=JSON.parse(text)}catch{lastErr='接口返回不是 JSON：'+text.slice(0,300); continue;} const models=(data.data||data.models||[]).map(m=>typeof m==='string'?m:(m.id||m.name)).filter(Boolean); if(!models.length){lastErr='接口返回中没有模型列表'; continue;} state.api.models=models; if(!state.api.model||!models.includes(state.api.model))state.api.model=models[0]; save(); renderModels(); updateStats(); toast('已拉取 '+models.length+' 个模型'); return;}catch(err){lastErr=err.message||String(err);}} throw new Error('拉取模型失败：'+lastErr);}
 function syncApiFromInputs(){state.api.baseUrl=fieldValue('apiBase',state.api.baseUrl).trim(); state.api.key=fieldValue('apiKey',state.api.key).trim(); state.api.temperature=Number(fieldValue('apiTemp',state.api.temperature||0.75)||0.75); state.api.maxTokens=Number(fieldValue('apiMaxTokens',state.api.maxTokens||4096)||4096); state.api.model=fieldValue('modelSelect',state.api.model)||state.api.model; save(); updateStats();}
-async function callAI(messages, opts={}){syncApiFromInputs(); if(!state.api.baseUrl||!state.api.key||!state.api.model)throw new Error('请先在 API 接口页填写 URL、Key 并选择模型。'); const payload={model:state.api.model,messages,temperature:opts.temperature??state.api.temperature,max_tokens:opts.maxTokens??state.api.maxTokens}; const res=await fetch(apiPath('/chat/completions'),{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+state.api.key},body:JSON.stringify(payload)}); const text=await res.text(); if(!res.ok)throw new Error('AI 请求失败：HTTP '+res.status+'\n'+text.slice(0,1200)); let data; try{data=JSON.parse(text)}catch{throw new Error('接口返回不是 JSON：'+text.slice(0,800))} const out=data.choices?.[0]?.message?.content || data.choices?.[0]?.text || data.output_text || ''; if(!out)throw new Error('接口未返回可读内容'); return out.trim();}
+async function callAI(messages, opts={}){syncApiFromInputs(); if(!state.api.baseUrl||!state.api.key||!state.api.model)throw new Error('请先在 API 接口页填写 URL、Key 并选择模型。'); const payload={model:state.api.model,messages,temperature:opts.temperature??state.api.temperature,max_tokens:opts.maxTokens??state.api.maxTokens}; const res=await fetch(apiPath('/chat/completions'),{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+state.api.key},body:JSON.stringify(payload)}); const text=await res.text(); if(!res.ok)throw new Error('AI 请求失败：HTTP '+res.status+'\n'+text.slice(0,1200)); let data;
+try{data=JSON.parse(text)}catch{throw new Error('接口返回不是 JSON：'+text.slice(0,800))}
+
+// 兼容多种 API 格式
+let out = '';
+// OpenAI 格式
+if (data.choices && data.choices[0] && data.choices[0].message) {
+  out = data.choices[0].message.content;
+}
+// Gemini 格式（你的返回格式）
+else if (data.response && data.response.text) {
+  out = data.response.text;
+}
+// 另一种 Gemini 格式（candidates）
+else if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+  out = data.candidates[0].content.parts?.map(p => p.text).join('') || '';
+}
+// 通用兜底
+else if (data.output_text) {
+  out = data.output_text;
+}
+// 如果还是没有，尝试获取第一个字符串字段
+else {
+  const str = JSON.stringify(data);
+  // 简单检查是否包含可见文本（非纯元数据）
+  const hasText = /[^\{\}\[\]\"\:\,\s\d\.]/.test(str) && str.length > 200;
+  if (hasText) out = str;
+}
+
+if(!out || out.trim().length < 10) throw new Error('接口未返回可读内容，请检查模型是否支持文本生成。');
+return out.trim();
 function currentTemplate(){return state.templates.find(t=>t.id===state.current.templateId)||state.templates[0]||builtInTemplates[0];}
 function renderCreator(){
   // 显示/隐藏 NPC 面板
