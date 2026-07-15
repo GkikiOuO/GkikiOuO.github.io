@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>表情包生成器</title>
-    <!-- 引入 gif.js 用于 GIF 生成 -->
+    <!-- gif.js 用于 GIF 生成 -->
     <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.min.js">
     </script>
     <style>
-        /* ===== 全局重置 & 字体 ===== */
+        /* 全局重置 & 粉色透明主题 */
         * {
             margin: 0;
             padding: 0;
@@ -19,34 +19,32 @@
             font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
             background: linear-gradient(135deg, #ffe8ee 0%, #ffd9e2 50%, #ffc8d4 100%);
             min-height: 100vh;
-            padding: 24px;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
         }
 
-        /* ===== 主容器 — 毛玻璃效果 ===== */
         .app-container {
             max-width: 1360px;
             width: 100%;
-            background: rgba(255, 245, 247, 0.65);
+            background: rgba(255, 245, 247, 0.60);
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
             border-radius: 48px;
-            padding: 32px 36px 40px;
-            box-shadow: 0 20px 60px rgba(255, 150, 180, 0.20), 0 8px 24px rgba(255, 130, 160, 0.10);
+            padding: 28px 32px 32px;
+            box-shadow: 0 20px 60px rgba(255, 150, 180, 0.20);
             border: 1px solid rgba(255, 255, 255, 0.50);
-            transition: all 0.2s;
         }
 
-        /* ===== 头部 ===== */
+        /* 头部 */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 28px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 8px;
         }
 
         .header-left {
@@ -54,23 +52,18 @@
             align-items: center;
             gap: 10px;
         }
-
         .header-left .icon {
             font-size: 32px;
-            line-height: 1;
         }
-
         .header-left h1 {
             font-size: 28px;
             font-weight: 700;
             color: #6b3a4a;
-            letter-spacing: 2px;
             background: linear-gradient(135deg, #d45a7a, #b84a6a);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-
         .header-right {
             font-size: 16px;
             color: #7a4e5e;
@@ -80,32 +73,27 @@
             backdrop-filter: blur(4px);
             border: 1px solid rgba(255, 255, 255, 0.6);
             font-weight: 500;
-            letter-spacing: 0.5px;
         }
-
         .header-right span {
             color: #b45374;
             font-weight: 600;
         }
 
-        /* ===== 主体布局 ===== */
-        .main-grid {
+        /* 主布局：预览区 + 右侧信息（文字列表） */
+        .main-layout {
             display: grid;
-            grid-template-columns: 1fr 340px;
-            gap: 28px;
-            margin-bottom: 28px;
+            grid-template-columns: 1fr 280px;
+            gap: 24px;
+            margin-bottom: 20px;
         }
 
-        /* ===== 预览区 ===== */
+        /* 预览区 */
         .preview-area {
             background: rgba(255, 255, 255, 0.35);
             border-radius: 28px;
             padding: 16px;
             border: 1px solid rgba(255, 255, 255, 0.60);
             backdrop-filter: blur(4px);
-            box-shadow: inset 0 2px 12px rgba(255, 200, 210, 0.15);
-            display: flex;
-            flex-direction: column;
         }
 
         .preview-area .label-row {
@@ -118,29 +106,14 @@
             font-weight: 500;
         }
 
-        .preview-area .label-row .badge {
-            background: rgba(255, 255, 255, 0.5);
-            padding: 2px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            color: #8a5a6a;
-        }
-
         .canvas-wrapper {
             position: relative;
             width: 100%;
             padding-bottom: 100%;
-            /* 1:1 方形 */
             background: rgba(255, 240, 244, 0.40);
             border-radius: 20px;
             overflow: hidden;
             border: 2px dashed rgba(255, 150, 180, 0.30);
-            transition: border-color 0.3s;
-        }
-
-        .canvas-wrapper.dragover {
-            border-color: #ff8da1;
-            background: rgba(255, 200, 210, 0.25);
         }
 
         .canvas-wrapper canvas {
@@ -151,8 +124,8 @@
             height: 100%;
             display: block;
             border-radius: 18px;
-            cursor: default;
             background: #fff9fa;
+            cursor: default;
         }
 
         .placeholder-text {
@@ -165,139 +138,181 @@
             pointer-events: none;
             text-align: center;
             opacity: 0.7;
-            line-height: 1.8;
         }
-
         .placeholder-text .big {
             font-size: 42px;
             display: block;
-            margin-bottom: 4px;
         }
 
-        /* ===== 控制面板 ===== */
-        .panel {
-            background: rgba(255, 255, 255, 0.40);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+        /* 右侧文字列表 */
+        .text-sidebar {
+            background: rgba(255, 255, 255, 0.35);
             border-radius: 28px;
-            padding: 22px 20px 24px;
+            padding: 16px 14px;
             border: 1px solid rgba(255, 255, 255, 0.60);
-            box-shadow: 0 4px 20px rgba(255, 160, 180, 0.08);
+            backdrop-filter: blur(4px);
             display: flex;
             flex-direction: column;
-            gap: 18px;
-            max-height: 620px;
-            overflow-y: auto;
+            gap: 10px;
+            max-height: 500px;
         }
 
-        .panel::-webkit-scrollbar {
+        .text-sidebar .sidebar-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b3a4a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .text-sidebar .sidebar-title .badge {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #8a5a6a;
+        }
+        .text-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 4px;
+        }
+        .text-list::-webkit-scrollbar {
             width: 4px;
         }
-        .panel::-webkit-scrollbar-track {
-            background: rgba(255, 200, 210, 0.15);
-            border-radius: 8px;
-        }
-        .panel::-webkit-scrollbar-thumb {
+        .text-list::-webkit-scrollbar-thumb {
             background: #ffb0c0;
             border-radius: 8px;
         }
 
-        .panel-section {
-            border-bottom: 1px solid rgba(255, 180, 195, 0.25);
-            padding-bottom: 16px;
-        }
-        .panel-section:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .panel-section .section-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: #7a4e5e;
-            margin-bottom: 10px;
+        .text-tag {
             display: flex;
             align-items: center;
-            gap: 6px;
-            letter-spacing: 0.3px;
-        }
-
-        .panel-section .section-title .emoji {
-            font-size: 16px;
-        }
-
-        /* 上传按钮 */
-        .upload-btn-wrapper {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .upload-btn-wrapper .file-input-wrap {
-            flex: 1;
-            position: relative;
-        }
-
-        .upload-btn-wrapper .file-input-wrap input[type="file"] {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-        }
-
-        .upload-btn-wrapper .file-input-wrap .fake-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.6);
-            border: 1px solid rgba(255, 180, 195, 0.4);
-            border-radius: 40px;
-            padding: 8px 16px;
-            font-size: 13px;
-            color: #6b3a4a;
-            font-weight: 500;
-            transition: all 0.2s;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .upload-btn-wrapper .file-input-wrap .fake-btn:hover {
-            background: rgba(255, 255, 255, 0.85);
-            border-color: #ff8da1;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255, 130, 160, 0.15);
-        }
-
-        .upload-btn-wrapper .clear-btn {
-            background: rgba(255, 200, 210, 0.3);
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.5);
             border: 1px solid rgba(255, 180, 195, 0.3);
-            border-radius: 40px;
-            padding: 8px 16px;
+            border-radius: 30px;
+            padding: 4px 12px 4px 16px;
             font-size: 13px;
-            color: #7a4e5e;
+            color: #4a2a3a;
             cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
+            transition: all 0.15s;
+            min-height: 34px;
+        }
+        .text-tag:hover {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: #ff8da1;
+        }
+        .text-tag.active-tag {
+            background: rgba(255, 140, 170, 0.20);
+            border-color: #ff8da1;
+            box-shadow: 0 0 0 2px rgba(255, 140, 170, 0.15);
+        }
+        .text-tag .tag-text {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
             white-space: nowrap;
         }
-
-        .upload-btn-wrapper .clear-btn:hover {
-            background: rgba(255, 180, 195, 0.4);
+        .text-tag .tag-del {
+            font-size: 16px;
+            color: #b58a9a;
+            cursor: pointer;
+            padding: 0 4px;
+            transition: color 0.2s;
+        }
+        .text-tag .tag-del:hover {
+            color: #d45a7a;
         }
 
-        /* 文字输入 */
-        .text-input-row {
+        /* 功能按钮栏 */
+        .function-tabs {
             display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 180, 195, 0.25);
+        }
+
+        .function-tabs .tab-btn {
+            padding: 8px 24px;
+            border: none;
+            border-radius: 40px;
+            background: rgba(255, 255, 255, 0.35);
+            color: #6b3a4a;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            backdrop-filter: blur(4px);
+        }
+
+        .function-tabs .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+        .function-tabs .tab-btn.active {
+            background: rgba(255, 255, 255, 0.7);
+            border-color: rgba(255, 140, 170, 0.3);
+            box-shadow: 0 2px 12px rgba(255, 130, 160, 0.08);
+            color: #b45374;
+        }
+
+        /* 功能面板容器 */
+        .panel-container {
+            background: rgba(255, 255, 255, 0.30);
+            border-radius: 28px;
+            padding: 20px 24px 24px;
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            backdrop-filter: blur(4px);
+            min-height: 200px;
+            margin-bottom: 16px;
+            transition: all 0.2s;
+        }
+
+        .panel-content {
+            display: none;
+            animation: fadeIn 0.25s ease;
+        }
+        .panel-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0.4;
+                transform: translateY(6px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .panel-content .panel-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #6b3a4a;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
             gap: 8px;
         }
 
+        /* 贴文字面板 */
+        .text-input-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
         .text-input-row input[type="text"] {
             flex: 1;
-            padding: 8px 14px;
+            padding: 8px 16px;
             border-radius: 40px;
             border: 1px solid rgba(255, 180, 195, 0.4);
             background: rgba(255, 255, 255, 0.6);
@@ -305,17 +320,15 @@
             color: #4a2a3a;
             outline: none;
             transition: all 0.2s;
-            font-weight: 400;
+            min-width: 140px;
         }
-
         .text-input-row input[type="text"]:focus {
             border-color: #ff8da1;
             box-shadow: 0 0 0 3px rgba(255, 140, 170, 0.15);
             background: rgba(255, 255, 255, 0.8);
         }
-
         .text-input-row .add-text-btn {
-            padding: 8px 18px;
+            padding: 8px 22px;
             border-radius: 40px;
             border: none;
             background: linear-gradient(135deg, #ff8da1, #f5728a);
@@ -326,25 +339,18 @@
             transition: all 0.2s;
             white-space: nowrap;
         }
-
         .text-input-row .add-text-btn:hover {
             transform: scale(1.03);
             box-shadow: 0 4px 16px rgba(255, 100, 130, 0.3);
         }
 
-        .text-input-row .add-text-btn:active {
-            transform: scale(0.96);
-        }
-
-        /* 样式控制行 */
         .style-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px 20px;
             align-items: center;
-            margin-top: 6px;
+            margin-bottom: 8px;
         }
-
         .style-row .color-group {
             display: flex;
             align-items: center;
@@ -352,7 +358,6 @@
             font-size: 13px;
             color: #6b3a4a;
         }
-
         .style-row .color-group input[type="color"] {
             width: 32px;
             height: 32px;
@@ -361,9 +366,7 @@
             padding: 0;
             cursor: pointer;
             background: none;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
-
         .style-row .color-group input[type="color"]::-webkit-color-swatch-wrapper {
             padding: 0;
         }
@@ -371,17 +374,15 @@
             border: none;
             border-radius: 50%;
         }
-
         .style-row .toggle-group {
             display: flex;
-            gap: 4px;
+            gap: 6px;
             align-items: center;
-            background: rgba(255, 255, 255, 0.4);
-            padding: 3px 6px;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 4px 10px;
             border-radius: 30px;
-            border: 1px solid rgba(255, 200, 210, 0.3);
+            border: 1px solid rgba(255, 200, 210, 0.2);
         }
-
         .style-row .toggle-group label {
             display: flex;
             align-items: center;
@@ -389,108 +390,52 @@
             font-size: 12px;
             color: #6b3a4a;
             cursor: pointer;
-            padding: 2px 10px;
+            padding: 2px 8px;
             border-radius: 20px;
-            transition: all 0.2s;
         }
-
-        .style-row .toggle-group label.active {
-            background: rgba(255, 140, 170, 0.2);
-        }
-
         .style-row .toggle-group input[type="checkbox"] {
             accent-color: #ff8da1;
             width: 15px;
             height: 15px;
             cursor: pointer;
         }
-
-        /* 文字列表 */
-        .text-list {
+        .style-row .font-size-control {
             display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 6px;
-            max-height: 80px;
-            overflow-y: auto;
-            padding: 2px 2px 4px;
-        }
-
-        .text-list::-webkit-scrollbar {
-            width: 3px;
-        }
-        .text-list::-webkit-scrollbar-thumb {
-            background: #ffb0c0;
-            border-radius: 8px;
-        }
-
-        .text-tag {
-            display: inline-flex;
             align-items: center;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.6);
-            border: 1px solid rgba(255, 180, 195, 0.3);
-            border-radius: 30px;
-            padding: 3px 12px 3px 16px;
+            gap: 8px;
             font-size: 13px;
-            color: #4a2a3a;
+            color: #6b3a4a;
+        }
+        .style-row .font-size-control input[type="range"] {
+            width: 120px;
+            accent-color: #ff8da1;
             cursor: pointer;
-            transition: all 0.15s;
-            max-width: 160px;
+        }
+        .style-row .font-size-control .size-label {
+            min-width: 32px;
+            text-align: center;
+            font-weight: 500;
+            color: #b45374;
         }
 
-        .text-tag:hover {
-            background: rgba(255, 255, 255, 0.85);
-            border-color: #ff8da1;
-        }
-
-        .text-tag.active-tag {
-            background: rgba(255, 140, 170, 0.20);
-            border-color: #ff8da1;
-            box-shadow: 0 0 0 2px rgba(255, 140, 170, 0.15);
-        }
-
-        .text-tag .tag-text {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 80px;
-        }
-
-        .text-tag .tag-del {
-            font-size: 14px;
-            color: #b58a9a;
-            cursor: pointer;
-            padding: 0 2px;
-            transition: color 0.2s;
-            line-height: 1;
-        }
-
-        .text-tag .tag-del:hover {
-            color: #d45a7a;
-        }
-
-        /* 尺寸 & 质量 */
+        /* 导出设置面板 */
         .size-quality-row {
             display: flex;
-            gap: 16px;
             flex-wrap: wrap;
+            gap: 16px 30px;
+            margin-bottom: 14px;
         }
-
         .size-quality-row .group {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             flex-wrap: wrap;
         }
-
         .size-quality-row .group .label {
             font-size: 13px;
             color: #6b3a4a;
             font-weight: 500;
-            margin-right: 2px;
         }
-
         .size-quality-row .group .btn-group {
             display: flex;
             gap: 4px;
@@ -499,9 +444,8 @@
             border-radius: 30px;
             border: 1px solid rgba(255, 200, 210, 0.2);
         }
-
         .size-quality-row .group .btn-group .opt-btn {
-            padding: 4px 14px;
+            padding: 4px 16px;
             border: none;
             border-radius: 30px;
             background: transparent;
@@ -511,28 +455,23 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-
         .size-quality-row .group .btn-group .opt-btn.active {
             background: rgba(255, 255, 255, 0.7);
             box-shadow: 0 2px 8px rgba(255, 130, 160, 0.15);
             color: #b45374;
         }
-
         .size-quality-row .group .btn-group .opt-btn:hover:not(.active) {
             background: rgba(255, 255, 255, 0.3);
         }
 
-        /* 操作按钮 */
         .action-row {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             flex-wrap: wrap;
-            margin-top: 2px;
+            margin-top: 6px;
         }
-
         .action-row .primary-btn {
-            flex: 1;
-            padding: 10px 18px;
+            padding: 10px 28px;
             border: none;
             border-radius: 40px;
             background: linear-gradient(135deg, #ff8da1, #f5728a);
@@ -541,68 +480,34 @@
             font-size: 14px;
             cursor: pointer;
             transition: all 0.2s;
-            min-width: 80px;
             box-shadow: 0 4px 14px rgba(255, 100, 130, 0.20);
         }
-
         .action-row .primary-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(255, 100, 130, 0.30);
         }
-
-        .action-row .primary-btn:active {
-            transform: scale(0.97);
-        }
-
         .action-row .primary-btn.outline {
             background: rgba(255, 255, 255, 0.5);
             color: #6b3a4a;
             box-shadow: none;
             border: 1px solid rgba(255, 180, 195, 0.4);
         }
-
         .action-row .primary-btn.outline:hover {
             background: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 4px 14px rgba(255, 130, 160, 0.10);
         }
 
-        /* ===== GIF 制作区 ===== */
-        .gif-section {
-            background: rgba(255, 255, 255, 0.30);
-            border-radius: 28px;
-            padding: 18px 24px 22px;
-            border: 1px solid rgba(255, 255, 255, 0.50);
-            backdrop-filter: blur(4px);
-            margin-bottom: 28px;
+        /* GIF 面板 */
+        .gif-controls {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 18px 30px;
+            gap: 14px 24px;
         }
-
-        .gif-section .gif-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #6b3a4a;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .gif-section .gif-controls {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 12px;
-            flex: 1;
-        }
-
-        .gif-section .gif-controls .file-input-wrap {
+        .gif-controls .file-input-wrap {
             position: relative;
             display: inline-block;
         }
-
-        .gif-section .gif-controls .file-input-wrap input[type="file"] {
+        .gif-controls .file-input-wrap input[type="file"] {
             position: absolute;
             opacity: 0;
             width: 100%;
@@ -611,9 +516,8 @@
             top: 0;
             left: 0;
         }
-
-        .gif-section .gif-controls .file-input-wrap .fake-btn {
-            padding: 7px 20px;
+        .gif-controls .file-input-wrap .fake-btn {
+            padding: 7px 22px;
             border-radius: 40px;
             background: rgba(255, 255, 255, 0.6);
             border: 1px solid rgba(255, 180, 195, 0.3);
@@ -623,25 +527,40 @@
             transition: all 0.2s;
             font-weight: 500;
         }
-
-        .gif-section .gif-controls .file-input-wrap .fake-btn:hover {
+        .gif-controls .file-input-wrap .fake-btn:hover {
             background: rgba(255, 255, 255, 0.85);
             border-color: #ff8da1;
         }
-
-        .gif-section .gif-controls .gif-status {
+        .gif-controls .gif-status {
             font-size: 13px;
             color: #7a4e5e;
             flex: 1;
-            min-width: 100px;
+            min-width: 120px;
         }
-
-        .gif-section .gif-controls .gif-status .file-name {
+        .gif-controls .gif-status .file-name {
             color: #b45374;
             font-weight: 500;
         }
-
-        .gif-section .gif-controls .gif-gen-btn {
+        .gif-controls .gif-size-select {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .gif-controls .gif-size-select .label {
+            font-size: 13px;
+            color: #6b3a4a;
+        }
+        .gif-controls .gif-size-select select {
+            padding: 4px 12px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 180, 195, 0.3);
+            background: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            color: #4a2a3a;
+            outline: none;
+            cursor: pointer;
+        }
+        .gif-controls .gif-gen-btn {
             padding: 7px 28px;
             border: none;
             border-radius: 40px;
@@ -653,107 +572,74 @@
             transition: all 0.2s;
             box-shadow: 0 4px 14px rgba(100, 180, 200, 0.20);
         }
-
-        .gif-section .gif-controls .gif-gen-btn:hover {
+        .gif-controls .gif-gen-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(100, 180, 200, 0.30);
         }
-
-        .gif-section .gif-controls .gif-gen-btn:disabled {
+        .gif-controls .gif-gen-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            transform: none !important;
+            transform: none;
         }
 
-        .gif-section .gif-size-select {
+        /* 仓库面板 */
+        .warehouse-toolbar {
             display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
             align-items: center;
-            gap: 6px;
         }
-
-        .gif-section .gif-size-select .label {
+        .warehouse-toolbar .wh-info {
             font-size: 13px;
-            color: #6b3a4a;
+            color: #7a4e5e;
+            flex: 1;
         }
-
-        .gif-section .gif-size-select select {
-            padding: 4px 12px;
+        .warehouse-toolbar .wh-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .warehouse-toolbar .wh-actions button {
+            padding: 5px 18px;
             border-radius: 30px;
             border: 1px solid rgba(255, 180, 195, 0.3);
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.4);
             font-size: 13px;
-            color: #4a2a3a;
-            outline: none;
-            cursor: pointer;
-        }
-
-        /* ===== 表情仓库 ===== */
-        .warehouse {
-            background: rgba(255, 255, 255, 0.30);
-            border-radius: 28px;
-            padding: 18px 24px 22px;
-            border: 1px solid rgba(255, 255, 255, 0.50);
-            backdrop-filter: blur(4px);
-        }
-
-        .warehouse .wh-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .warehouse .wh-header .wh-title {
-            font-size: 15px;
-            font-weight: 600;
             color: #6b3a4a;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .warehouse .wh-header .wh-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .warehouse .wh-header .wh-actions .clear-wh {
-            font-size: 12px;
-            color: #b58a9a;
             cursor: pointer;
-            background: rgba(255, 255, 255, 0.3);
-            padding: 4px 16px;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 200, 210, 0.2);
             transition: all 0.2s;
+            font-weight: 500;
         }
-
-        .warehouse .wh-header .wh-actions .clear-wh:hover {
-            background: rgba(255, 180, 195, 0.3);
+        .warehouse-toolbar .wh-actions button:hover {
+            background: rgba(255, 255, 255, 0.7);
+            border-color: #ff8da1;
+        }
+        .warehouse-toolbar .wh-actions button.danger {
             color: #d45a7a;
+            border-color: #f5b0b0;
+        }
+        .warehouse-toolbar .wh-actions button.danger:hover {
+            background: rgba(255, 100, 130, 0.15);
         }
 
-        .warehouse .wh-grid {
+        .wh-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-            gap: 14px;
-            max-height: 200px;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 16px;
+            max-height: 280px;
             overflow-y: auto;
-            padding: 2px 2px 6px;
+            padding: 4px 2px 8px;
         }
-
-        .warehouse .wh-grid::-webkit-scrollbar {
+        .wh-grid::-webkit-scrollbar {
             width: 4px;
         }
-        .warehouse .wh-grid::-webkit-scrollbar-thumb {
+        .wh-grid::-webkit-scrollbar-thumb {
             background: #ffb0c0;
             border-radius: 8px;
         }
 
-        .warehouse .wh-item {
+        .wh-item {
             position: relative;
             background: rgba(255, 255, 255, 0.5);
             border-radius: 16px;
@@ -762,22 +648,31 @@
             aspect-ratio: 1/1;
             transition: all 0.2s;
             box-shadow: 0 2px 8px rgba(255, 130, 160, 0.06);
+            cursor: pointer;
         }
-
-        .warehouse .wh-item:hover {
-            transform: scale(1.02);
+        .wh-item:hover {
+            transform: scale(1.03);
             box-shadow: 0 6px 20px rgba(255, 130, 160, 0.12);
         }
-
-        .warehouse .wh-item img,
-        .warehouse .wh-item video {
+        .wh-item img,
+        .wh-item video {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
         }
-
-        .warehouse .wh-item .wh-del {
+        .wh-item .wh-check {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 22px;
+            height: 22px;
+            accent-color: #ff8da1;
+            cursor: pointer;
+            z-index: 2;
+            opacity: 0.8;
+        }
+        .wh-item .wh-del {
             position: absolute;
             top: 4px;
             right: 4px;
@@ -795,25 +690,50 @@
             opacity: 0;
             transition: opacity 0.2s;
             padding: 0;
+            z-index: 2;
         }
-
-        .warehouse .wh-item:hover .wh-del {
+        .wh-item:hover .wh-del {
             opacity: 1;
         }
-
-        .warehouse .wh-item .wh-del:hover {
+        .wh-item .wh-del:hover {
             background: rgba(255, 200, 210, 0.8);
         }
+        .wh-item .wh-download {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(4px);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
+            line-height: 24px;
+            text-align: center;
+            color: #6b3a4a;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+            padding: 0;
+            z-index: 2;
+        }
+        .wh-item:hover .wh-download {
+            opacity: 1;
+        }
+        .wh-item .wh-download:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
 
-        .warehouse .wh-empty {
+        .wh-empty {
             color: #b58a9a;
             font-size: 14px;
             text-align: center;
-            padding: 30px 0;
+            padding: 40px 0;
             grid-column: 1 / -1;
         }
 
-        /* ===== Toast ===== */
+        /* toast */
         .toast {
             position: fixed;
             bottom: 40px;
@@ -833,245 +753,210 @@
             z-index: 999;
             border: 1px solid rgba(255, 255, 255, 0.10);
         }
-
         .toast.show {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
 
-        /* ===== 响应式 ===== */
+        /* 响应式 */
         @media (max-width: 1024px) {
-            .main-grid {
+            .main-layout {
                 grid-template-columns: 1fr;
+                gap: 16px;
             }
-            .panel {
-                max-height: none;
+            .text-sidebar {
+                max-height: 200px;
             }
             .app-container {
-                padding: 20px;
+                padding: 18px;
             }
         }
-
         @media (max-width: 600px) {
             .app-container {
-                padding: 14px;
+                padding: 12px;
                 border-radius: 28px;
             }
             .header-left h1 {
                 font-size: 22px;
             }
-            .header-right {
+            .function-tabs .tab-btn {
+                padding: 6px 16px;
                 font-size: 13px;
-                padding: 4px 14px;
             }
-            .gif-section {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 12px;
-            }
-            .size-quality-row {
-                flex-direction: column;
-                gap: 8px;
-            }
-            .action-row .primary-btn {
-                flex: 1 1 100%;
-            }
-            .text-input-row {
-                flex-wrap: wrap;
-            }
-            .text-input-row input[type="text"] {
-                flex: 1 1 100%;
-            }
-            .text-input-row .add-text-btn {
-                flex: 1;
+            .panel-container {
+                padding: 16px;
             }
             .style-row {
                 gap: 8px;
             }
-            .warehouse .wh-grid {
-                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            .style-row .font-size-control input[type="range"] {
+                width: 80px;
+            }
+            .wh-grid {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
                 gap: 10px;
             }
-        }
-
-        /* 小工具：隐藏滚动条但可滚 */
-        .scrollable {
-            scrollbar-width: thin;
-        }
-        .scrollable::-webkit-scrollbar {
-            width: 4px;
-        }
-        .scrollable::-webkit-scrollbar-thumb {
-            background: #ffb0c0;
-            border-radius: 8px;
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== Toast 提示 ===== -->
+    <!-- Toast -->
     <div id="toast" class="toast"></div>
 
-    <!-- ===== 主容器 ===== -->
     <div class="app-container">
 
-        <!-- ===== 头部 ===== -->
+        <!-- 头部 -->
         <header class="header">
             <div class="header-left">
                 <span class="icon">🌸</span>
                 <h1>表情包生成器</h1>
             </div>
-            <div class="header-right">
-                ✦ 制作人：<span>KIKI</span>
-            </div>
+            <div class="header-right">✦ 制作人：<span>KIKI</span></div>
         </header>
 
-        <!-- ===== 主体 ===== -->
-        <div class="main-grid">
-
-            <!-- ====== 预览区 ====== -->
+        <!-- 主布局：预览 + 文字侧边栏 -->
+        <div class="main-layout">
+            <!-- 预览区 -->
             <div class="preview-area">
                 <div class="label-row">
                     <span>🖼️ 预览区</span>
-                    <span class="badge">点击文字可选中 · 拖拽移动</span>
+                    <span class="badge">点击文字选中 · 拖拽移动</span>
                 </div>
                 <div class="canvas-wrapper" id="canvasWrapper">
                     <canvas id="mainCanvas" width="600" height="600"></canvas>
                     <div class="placeholder-text" id="placeholderText">
                         <span class="big">📷</span>
-                        上传图片开始创作<br />
-                        或直接添加文字
+                        上传图片或添加文字
                     </div>
                 </div>
             </div>
 
-            <!-- ====== 控制面板 ====== -->
-            <div class="panel" id="controlPanel">
-
-                <!-- 上传图片 -->
-                <div class="panel-section">
-                    <div class="section-title"><span class="emoji">📤</span> 上传图片</div>
-                    <div class="upload-btn-wrapper">
-                        <div class="file-input-wrap">
-                            <input type="file" id="imageUpload" accept="image/*" />
-                            <div class="fake-btn">📁 选择图片</div>
-                        </div>
-                        <button class="clear-btn" id="clearImageBtn">✕ 清除</button>
-                    </div>
+            <!-- 文字侧边栏 -->
+            <div class="text-sidebar">
+                <div class="sidebar-title">
+                    <span>📝 文字列表</span>
+                    <span class="badge" id="textCount">0</span>
                 </div>
-
-                <!-- 贴文字 -->
-                <div class="panel-section">
-                    <div class="section-title"><span class="emoji">✏️</span> 贴文字</div>
-                    <div class="text-input-row">
-                        <input type="text" id="textInput" placeholder="输入文字，按 Enter 添加" maxlength="30" />
-                        <button class="add-text-btn" id="addTextBtn">添加</button>
-                    </div>
-
-                    <!-- 样式 -->
-                    <div class="style-row">
-                        <div class="color-group">
-                            <span>颜色</span>
-                            <input type="color" id="textColor" value="#d45a7a" />
-                        </div>
-                        <div class="color-group">
-                            <span>描边</span>
-                            <input type="color" id="strokeColor" value="#ffffff" />
-                        </div>
-                        <div class="toggle-group">
-                            <label id="boldLabel">
-                                <input type="checkbox" id="boldCheck" /> 粗体
-                            </label>
-                            <label id="strokeLabel">
-                                <input type="checkbox" id="strokeCheck" /> 描边
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- 文字列表 -->
-                    <div class="text-list" id="textList"></div>
-                    <div style="font-size:11px; color:#b58a9a; margin-top:4px;">点击文字选中，拖拽预览区文字移动</div>
-                </div>
-
-                <!-- 尺寸 & 质量 -->
-                <div class="panel-section">
-                    <div class="section-title"><span class="emoji">📐</span> 导出设置</div>
-                    <div class="size-quality-row">
-                        <div class="group">
-                            <span class="label">尺寸</span>
-                            <div class="btn-group" id="sizeGroup">
-                                <button class="opt-btn" data-value="120">小</button>
-                                <button class="opt-btn active" data-value="240">中</button>
-                                <button class="opt-btn" data-value="480">大</button>
-                            </div>
-                        </div>
-                        <div class="group">
-                            <span class="label">质量</span>
-                            <div class="btn-group" id="qualityGroup">
-                                <button class="opt-btn" data-value="lossless">无损</button>
-                                <button class="opt-btn active" data-value="compressed">压缩</button>
-                                <button class="opt-btn" data-value="low">渣图</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 操作按钮 -->
-                <div class="panel-section" style="border-bottom: none; padding-bottom: 0;">
-                    <div class="action-row">
-                        <button class="primary-btn" id="exportBtn">💾 导出表情</button>
-                        <button class="primary-btn outline" id="saveToWarehouseBtn">📦 存到仓库</button>
-                    </div>
+                <div class="text-list" id="textList"></div>
+                <div style="font-size:11px; color:#b58a9a; text-align:center; padding-top:4px;">
+                    点击文字选中，拖拽预览区移动
                 </div>
             </div>
         </div>
 
-        <!-- ===== GIF 制作区 ===== -->
-        <div class="gif-section">
-            <div class="gif-title">🎬 GIF 制作</div>
-            <div class="gif-controls">
-                <div class="file-input-wrap">
-                    <input type="file" id="videoUpload" accept="video/*" />
-                    <div class="fake-btn">📹 上传视频</div>
-                </div>
-                <div class="gif-status" id="gifStatus">未选择视频</div>
-                <div class="gif-size-select">
-                    <span class="label">尺寸</span>
-                    <select id="gifSizeSelect">
-                        <option value="120">小 120</option>
-                        <option value="240" selected>中 240</option>
-                        <option value="480">大 480</option>
-                    </select>
-                </div>
-                <button class="gif-gen-btn" id="genGifBtn">⚡ 生成 GIF</button>
-            </div>
+        <!-- 功能切换标签 -->
+        <div class="function-tabs" id="functionTabs">
+            <button class="tab-btn active" data-tab="text">✏️ 贴文字</button>
+            <button class="tab-btn" data-tab="export">📐 导出设置</button>
+            <button class="tab-btn" data-tab="gif">🎬 GIF制作</button>
+            <button class="tab-btn" data-tab="warehouse">📦 仓库</button>
         </div>
 
-        <!-- ===== 表情仓库 ===== -->
-        <div class="warehouse">
-            <div class="wh-header">
-                <div class="wh-title">📦 表情仓库</div>
-                <div class="wh-actions">
-                    <span style="font-size:13px; color:#7a4e5e;" id="whCount">0 个</span>
-                    <button class="clear-wh" id="clearWarehouseBtn">清空仓库</button>
+        <!-- 功能面板容器 -->
+        <div class="panel-container">
+
+            <!-- 贴文字面板 -->
+            <div class="panel-content active" id="panel-text">
+                <div class="panel-title">✏️ 贴文字</div>
+                <div class="text-input-row">
+                    <input type="text" id="textInput" placeholder="输入文字，按 Enter 添加" maxlength="30" />
+                    <button class="add-text-btn" id="addTextBtn">添加</button>
+                </div>
+                <div class="style-row">
+                    <div class="color-group">
+                        <span>颜色</span>
+                        <input type="color" id="textColor" value="#d45a7a" />
+                    </div>
+                    <div class="color-group">
+                        <span>描边</span>
+                        <input type="color" id="strokeColor" value="#ffffff" />
+                    </div>
+                    <div class="toggle-group">
+                        <label><input type="checkbox" id="boldCheck" /> 粗体</label>
+                        <label><input type="checkbox" id="strokeCheck" /> 描边</label>
+                    </div>
+                    <div class="font-size-control">
+                        <span>字号</span>
+                        <input type="range" id="fontSizeSlider" min="16" max="80" value="32" step="1" />
+                        <span class="size-label" id="fontSizeLabel">32</span>
+                    </div>
+                </div>
+                <div style="font-size:12px; color:#b58a9a; margin-top:4px;">💡 选中文字后调整样式，拖拽预览区文字移动位置</div>
+            </div>
+
+            <!-- 导出设置面板 -->
+            <div class="panel-content" id="panel-export">
+                <div class="panel-title">📐 导出设置</div>
+                <div class="size-quality-row">
+                    <div class="group">
+                        <span class="label">尺寸</span>
+                        <div class="btn-group" id="sizeGroup">
+                            <button class="opt-btn" data-value="120">小</button>
+                            <button class="opt-btn active" data-value="240">中</button>
+                            <button class="opt-btn" data-value="480">大</button>
+                        </div>
+                    </div>
+                    <div class="group">
+                        <span class="label">质量</span>
+                        <div class="btn-group" id="qualityGroup">
+                            <button class="opt-btn" data-value="lossless">无损</button>
+                            <button class="opt-btn active" data-value="compressed">压缩</button>
+                            <button class="opt-btn" data-value="low">渣图</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-row">
+                    <button class="primary-btn" id="exportBtn">💾 导出表情</button>
+                    <button class="primary-btn outline" id="saveToWarehouseBtn">📦 存到仓库</button>
                 </div>
             </div>
-            <div class="wh-grid" id="whGrid">
-                <div class="wh-empty">✨ 还没有表情，制作后存到这里吧</div>
+
+            <!-- GIF 制作面板 -->
+            <div class="panel-content" id="panel-gif">
+                <div class="panel-title">🎬 GIF 制作</div>
+                <div class="gif-controls">
+                    <div class="file-input-wrap">
+                        <input type="file" id="videoUpload" accept="video/*" />
+                        <div class="fake-btn">📹 上传视频</div>
+                    </div>
+                    <div class="gif-status" id="gifStatus">未选择视频</div>
+                    <div class="gif-size-select">
+                        <span class="label">尺寸</span>
+                        <select id="gifSizeSelect">
+                            <option value="120">小 120</option>
+                            <option value="240" selected>中 240</option>
+                            <option value="480">大 480</option>
+                        </select>
+                    </div>
+                    <button class="gif-gen-btn" id="genGifBtn">⚡ 生成 GIF</button>
+                </div>
+            </div>
+
+            <!-- 仓库面板 -->
+            <div class="panel-content" id="panel-warehouse">
+                <div class="panel-title">📦 表情仓库</div>
+                <div class="warehouse-toolbar">
+                    <span class="wh-info" id="whCount">共 0 个</span>
+                    <div class="wh-actions">
+                        <button id="downloadSelectedBtn">⬇️ 下载选中</button>
+                        <button class="danger" id="deleteSelectedBtn">🗑️ 删除选中</button>
+                        <button id="clearWarehouseBtn">清空全部</button>
+                    </div>
+                </div>
+                <div class="wh-grid" id="whGrid">
+                    <div class="wh-empty">✨ 还没有表情，制作后存到这里吧</div>
+                </div>
             </div>
         </div>
 
     </div>
 
     <script>
-        // ================================================================
-        //  JavaScript 逻辑
-        // ================================================================
-
         (function() {
             'use strict';
 
-            // ---------- DOM 引用 ----------
+            // ----- DOM 引用 -----
             const canvas = document.getElementById('mainCanvas');
             const ctx = canvas.getContext('2d');
             const wrapper = document.getElementById('canvasWrapper');
@@ -1086,7 +971,10 @@
             const strokeColor = document.getElementById('strokeColor');
             const boldCheck = document.getElementById('boldCheck');
             const strokeCheck = document.getElementById('strokeCheck');
+            const fontSizeSlider = document.getElementById('fontSizeSlider');
+            const fontSizeLabel = document.getElementById('fontSizeLabel');
             const textList = document.getElementById('textList');
+            const textCount = document.getElementById('textCount');
 
             const sizeGroup = document.getElementById('sizeGroup');
             const qualityGroup = document.getElementById('qualityGroup');
@@ -1101,44 +989,40 @@
             const whGrid = document.getElementById('whGrid');
             const whCount = document.getElementById('whCount');
             const clearWarehouseBtn = document.getElementById('clearWarehouseBtn');
+            const downloadSelectedBtn = document.getElementById('downloadSelectedBtn');
+            const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
 
             const toastEl = document.getElementById('toast');
 
-            // ---------- 状态 ----------
-            const state = {
-                // 图片
-                image: null, // Image 对象
-                imageDataURL: null,
+            // 功能切换
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const panels = {
+                text: document.getElementById('panel-text'),
+                export: document.getElementById('panel-export'),
+                gif: document.getElementById('panel-gif'),
+                warehouse: document.getElementById('panel-warehouse')
+            };
 
-                // 文字数组：{ id, text, x, y, color, bold, stroke, strokeColor, fontSize }
+            // ----- 状态 -----
+            const state = {
+                image: null,
+                imageDataURL: null,
                 texts: [],
                 nextId: 1,
-
-                // 当前选中的文字 id
                 selectedId: null,
-
-                // 拖拽状态
                 dragging: false,
                 dragTargetId: null,
                 dragOffsetX: 0,
                 dragOffsetY: 0,
-
-                // 导出尺寸 (px)
-                exportSize: 240,
-
-                // 质量
-                quality: 'compressed', // 'lossless' | 'compressed' | 'low'
-
-                // 画布尺寸 (逻辑尺寸)
                 canvasSize: 600,
-
-                // GIF 视频相关
+                exportSize: 240,
+                quality: 'compressed',
                 videoFile: null,
                 videoURL: null,
                 videoElement: null,
             };
 
-            // ---------- 工具函数 ----------
+            // ----- 工具 -----
             function showToast(msg, duration = 2600) {
                 toastEl.textContent = msg;
                 toastEl.classList.add('show');
@@ -1148,7 +1032,7 @@
                 }, duration);
             }
 
-            // ---------- 绘图核心 ----------
+            // ----- 绘图核心 -----
             function drawScene() {
                 const w = state.canvasSize;
                 const h = state.canvasSize;
@@ -1161,7 +1045,7 @@
                 ctx.fillStyle = grad;
                 ctx.fillRect(0, 0, w, h);
 
-                // 绘制图片
+                // 图片
                 if (state.image) {
                     const img = state.image;
                     const iw = img.width;
@@ -1172,69 +1056,37 @@
                     const dx = (w - dw) / 2;
                     const dy = (h - dh) / 2;
                     ctx.drawImage(img, dx, dy, dw, dh);
-                } else {
-                    // 无图片时显示网格提示
-                    ctx.fillStyle = 'rgba(255,200,210,0.08)';
-                    ctx.fillRect(0, 0, w, h);
-                    ctx.strokeStyle = 'rgba(255,180,195,0.12)';
-                    ctx.lineWidth = 1;
-                    const step = 40;
-                    for (let x = 0; x <= w; x += step) {
-                        ctx.beginPath();
-                        ctx.moveTo(x, 0);
-                        ctx.lineTo(x, h);
-                        ctx.stroke();
-                    }
-                    for (let y = 0; y <= h; y += step) {
-                        ctx.beginPath();
-                        ctx.moveTo(0, y);
-                        ctx.lineTo(w, y);
-                        ctx.stroke();
-                    }
                 }
 
-                // 绘制所有文字
+                // 文字
                 for (const t of state.texts) {
                     drawText(t);
                 }
 
-                // 更新占位符显隐
                 placeholder.style.display = (state.image || state.texts.length > 0) ? 'none' : 'block';
             }
 
             function drawText(t) {
-                const w = state.canvasSize;
-                const h = state.canvasSize;
                 const fontSize = t.fontSize || 32;
                 ctx.save();
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-
-                // 字体
                 let font = '';
                 if (t.bold) font += 'bold ';
                 font += fontSize + 'px "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif';
                 ctx.font = font;
 
-                // 描边
-                const hasStroke = t.stroke || false;
-                const strokeCol = t.strokeColor || '#ffffff';
-                const lineW = Math.max(2, fontSize / 14);
-
-                // 先画描边
-                if (hasStroke) {
-                    ctx.lineWidth = lineW;
-                    ctx.strokeStyle = strokeCol;
+                if (t.stroke) {
+                    ctx.lineWidth = Math.max(2, fontSize / 14);
+                    ctx.strokeStyle = t.strokeColor || '#ffffff';
                     ctx.lineJoin = 'round';
                     ctx.lineCap = 'round';
                     ctx.strokeText(t.text, t.x, t.y);
                 }
-
-                // 再画填充
                 ctx.fillStyle = t.color || '#d45a7a';
                 ctx.fillText(t.text, t.x, t.y);
 
-                // 选中高亮
+                // 选中边框
                 if (state.selectedId === t.id) {
                     const metrics = ctx.measureText(t.text);
                     const tw = metrics.width;
@@ -1246,21 +1098,10 @@
                     ctx.setLineDash([4, 6]);
                     ctx.strokeRect(t.x - tw / 2 - pad, t.y - th / 2 - pad, tw + pad * 2, th + pad * 2);
                     ctx.restore();
-                    // 小把手
-                    ctx.save();
-                    ctx.fillStyle = '#ff8da1';
-                    ctx.shadowColor = 'rgba(255,140,170,0.3)';
-                    ctx.shadowBlur = 8;
-                    ctx.beginPath();
-                    ctx.arc(t.x + tw / 2 + pad + 6, t.y - th / 2 - pad + 6, 5, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.restore();
                 }
-
                 ctx.restore();
             }
 
-            // ---------- 测量文字尺寸 ----------
             function measureTextObj(t) {
                 const fontSize = t.fontSize || 32;
                 ctx.save();
@@ -1277,9 +1118,7 @@
                 return { width, height };
             }
 
-            // ---------- 检测点击文字 ----------
             function hitTestText(mx, my) {
-                // 从后往前（上层优先）
                 for (let i = state.texts.length - 1; i >= 0; i--) {
                     const t = state.texts[i];
                     const size = measureTextObj(t);
@@ -1293,11 +1132,11 @@
                 return null;
             }
 
-            // ---------- 更新文字列表 UI ----------
+            // ----- 文字管理 -----
             function renderTextList() {
                 textList.innerHTML = '';
                 for (const t of state.texts) {
-                    const tag = document.createElement('span');
+                    const tag = document.createElement('div');
                     tag.className = 'text-tag';
                     if (state.selectedId === t.id) tag.classList.add('active-tag');
 
@@ -1322,9 +1161,9 @@
 
                     textList.appendChild(tag);
                 }
+                textCount.textContent = state.texts.length;
             }
 
-            // ---------- 文字 CRUD ----------
             function addText(text) {
                 if (!text || text.trim() === '') {
                     showToast('请输入文字内容');
@@ -1341,7 +1180,7 @@
                     bold: boldCheck.checked,
                     stroke: strokeCheck.checked,
                     strokeColor: strokeColor.value,
-                    fontSize: 32,
+                    fontSize: parseInt(fontSizeSlider.value, 10) || 32,
                 };
                 state.texts.push(newText);
                 selectText(newText.id);
@@ -1361,18 +1200,18 @@
                 }
                 renderTextList();
                 drawScene();
-                if (state.texts.length === 0) showToast('已删除');
             }
 
             function selectText(id) {
                 state.selectedId = id;
                 const t = state.texts.find(t => t.id === id);
                 if (t) {
-                    // 同步控件
                     textColor.value = t.color || '#d45a7a';
                     strokeColor.value = t.strokeColor || '#ffffff';
                     boldCheck.checked = t.bold || false;
                     strokeCheck.checked = t.stroke || false;
+                    fontSizeSlider.value = t.fontSize || 32;
+                    fontSizeLabel.textContent = t.fontSize || 32;
                 }
                 renderTextList();
                 drawScene();
@@ -1385,11 +1224,13 @@
                 t.strokeColor = strokeColor.value;
                 t.bold = boldCheck.checked;
                 t.stroke = strokeCheck.checked;
+                t.fontSize = parseInt(fontSizeSlider.value, 10) || 32;
+                fontSizeLabel.textContent = t.fontSize;
                 renderTextList();
                 drawScene();
             }
 
-            // ---------- 图片加载 ----------
+            // ----- 图片 -----
             function loadImage(file) {
                 if (!file) return;
                 const reader = new FileReader();
@@ -1401,9 +1242,7 @@
                         drawScene();
                         showToast('✅ 图片已上传');
                     };
-                    img.onerror = () => {
-                        showToast('❌ 图片加载失败');
-                    };
+                    img.onerror = () => showToast('❌ 图片加载失败');
                     img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
@@ -1417,30 +1256,24 @@
                 imageUpload.value = '';
             }
 
-            // ---------- 导出 ----------
+            // ----- 导出 -----
             function getExportSettings() {
-                // 尺寸
                 let size = 240;
-                const activeSizeBtn = sizeGroup.querySelector('.opt-btn.active');
-                if (activeSizeBtn) size = parseInt(activeSizeBtn.dataset.value, 10);
-
-                // 质量
+                const activeSize = sizeGroup.querySelector('.opt-btn.active');
+                if (activeSize) size = parseInt(activeSize.dataset.value, 10);
                 let quality = 'compressed';
-                const activeQBtn = qualityGroup.querySelector('.opt-btn.active');
-                if (activeQBtn) quality = activeQBtn.dataset.value;
-
+                const activeQ = qualityGroup.querySelector('.opt-btn.active');
+                if (activeQ) quality = activeQ.dataset.value;
                 return { size, quality };
             }
 
             function exportImage() {
                 const { size, quality } = getExportSettings();
-                // 创建离屏 canvas
                 const offscreen = document.createElement('canvas');
                 offscreen.width = size;
                 offscreen.height = size;
                 const offCtx = offscreen.getContext('2d');
 
-                // 绘制
                 const srcSize = state.canvasSize;
                 const scale = size / srcSize;
 
@@ -1451,7 +1284,6 @@
                 offCtx.fillStyle = grad;
                 offCtx.fillRect(0, 0, size, size);
 
-                // 图片
                 if (state.image) {
                     const img = state.image;
                     const iw = img.width;
@@ -1464,7 +1296,6 @@
                     offCtx.drawImage(img, dx, dy, dw, dh);
                 }
 
-                // 文字
                 for (const t of state.texts) {
                     const fs = Math.max(12, Math.round((t.fontSize || 32) * scale));
                     offCtx.save();
@@ -1474,10 +1305,8 @@
                     if (t.bold) font += 'bold ';
                     font += fs + 'px "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif';
                     offCtx.font = font;
-
                     const tx = t.x * scale;
                     const ty = t.y * scale;
-
                     if (t.stroke) {
                         offCtx.lineWidth = Math.max(1.5, fs / 14);
                         offCtx.strokeStyle = t.strokeColor || '#ffffff';
@@ -1490,39 +1319,24 @@
                     offCtx.restore();
                 }
 
-                // 导出
                 let mimeType = 'image/png';
                 let qualityParam = undefined;
                 let ext = 'png';
-
                 if (quality === 'lossless') {
                     mimeType = 'image/png';
                     ext = 'png';
                 } else if (quality === 'compressed') {
-                    // 使用 JPEG 中等质量模拟 "压缩"
                     mimeType = 'image/jpeg';
                     qualityParam = 0.75;
                     ext = 'jpg';
-                } else { // low
+                } else {
                     mimeType = 'image/jpeg';
                     qualityParam = 0.30;
                     ext = 'jpg';
                 }
 
-                // 对于 PNG，我们仍然使用 PNG，但 "压缩" 用 JPEG
-                // 但用户期望 "压缩" 是 PNG 但更小，这里用 JPEG 替代以便有明显区别
-                // 但微信表情包推荐 PNG，所以 "无损" 用 PNG，"压缩" 和 "渣图" 用 JPEG 不同质量
-                // 如果用户希望压缩也是 PNG，可以改成 PNG，但文件大小区别不大
-                // 我们保留这个设计，让用户有明确的选择
-
-                // 但为了让 "压缩" 也是 PNG 但更小，我们可以降低颜色深度，但浏览器不支持
-                // 所以使用 JPEG 不同质量来区分
-
                 offscreen.toBlob((blob) => {
-                    if (!blob) {
-                        showToast('❌ 导出失败');
-                        return;
-                    }
+                    if (!blob) { showToast('❌ 导出失败'); return; }
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
@@ -1532,92 +1346,13 @@
                     a.click();
                     document.body.removeChild(a);
                     setTimeout(() => URL.revokeObjectURL(url), 5000);
-                    showToast(`✅ 已导出 ${size}x${size} ${label} 格式`);
+                    showToast(`✅ 已导出 ${size}x${size} ${label}`);
                 }, mimeType, qualityParam);
             }
 
-            // ---------- 保存到仓库 ----------
-            function saveToWarehouse() {
-                const { size, quality } = getExportSettings();
-                // 使用当前设置导出图片数据（但仓库存储用 PNG 无损，以便保持质量）
-                const offscreen = document.createElement('canvas');
-                offscreen.width = size;
-                offscreen.height = size;
-                const offCtx = offscreen.getContext('2d');
-
-                const srcSize = state.canvasSize;
-                const scale = size / srcSize;
-
-                // 背景
-                const grad = offCtx.createRadialGradient(size / 2, size / 2, 10, size / 2, size / 2, size * 0.7);
-                grad.addColorStop(0, '#fff5f7');
-                grad.addColorStop(1, '#fce8ee');
-                offCtx.fillStyle = grad;
-                offCtx.fillRect(0, 0, size, size);
-
-                if (state.image) {
-                    const img = state.image;
-                    const iw = img.width;
-                    const ih = img.height;
-                    const s = Math.min(size / iw, size / ih);
-                    const dw = iw * s;
-                    const dh = ih * s;
-                    const dx = (size - dw) / 2;
-                    const dy = (size - dh) / 2;
-                    offCtx.drawImage(img, dx, dy, dw, dh);
-                }
-
-                for (const t of state.texts) {
-                    const fs = Math.max(12, Math.round((t.fontSize || 32) * scale));
-                    offCtx.save();
-                    offCtx.textAlign = 'center';
-                    offCtx.textBaseline = 'middle';
-                    let font = '';
-                    if (t.bold) font += 'bold ';
-                    font += fs + 'px "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif';
-                    offCtx.font = font;
-                    const tx = t.x * scale;
-                    const ty = t.y * scale;
-                    if (t.stroke) {
-                        offCtx.lineWidth = Math.max(1.5, fs / 14);
-                        offCtx.strokeStyle = t.strokeColor || '#ffffff';
-                        offCtx.lineJoin = 'round';
-                        offCtx.lineCap = 'round';
-                        offCtx.strokeText(t.text, tx, ty);
-                    }
-                    offCtx.fillStyle = t.color || '#d45a7a';
-                    offCtx.fillText(t.text, tx, ty);
-                    offCtx.restore();
-                }
-
-                offscreen.toBlob((blob) => {
-                    if (!blob) {
-                        showToast('❌ 保存失败');
-                        return;
-                    }
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const dataURL = e.target.result;
-                        const items = getWarehouseItems();
-                        items.push({
-                            type: 'image',
-                            data: dataURL,
-                            size: size,
-                            time: Date.now(),
-                        });
-                        saveWarehouseItems(items);
-                        renderWarehouse();
-                        showToast('📦 已存入仓库');
-                    };
-                    reader.readAsDataURL(blob);
-                }, 'image/png');
-            }
-
-            // ---------- 仓库操作 ----------
+            // ----- 仓库 -----
             function getWarehouseItems() {
-                try {
-                    return JSON.parse(localStorage.getItem('emoji_warehouse') || '[]');
-                } catch { return []; }
+                try { return JSON.parse(localStorage.getItem('emoji_warehouse') || '[]'); } catch { return []; }
             }
 
             function saveWarehouseItems(items) {
@@ -1627,7 +1362,7 @@
             function renderWarehouse() {
                 const items = getWarehouseItems();
                 whGrid.innerHTML = '';
-                whCount.textContent = items.length + ' 个';
+                whCount.textContent = `共 ${items.length} 个`;
 
                 if (items.length === 0) {
                     const empty = document.createElement('div');
@@ -1643,12 +1378,51 @@
                     const div = document.createElement('div');
                     div.className = 'wh-item';
 
-                    const img = document.createElement('img');
-                    img.src = item.data;
-                    img.alt = '表情';
-                    img.loading = 'lazy';
-                    div.appendChild(img);
+                    // 复选框
+                    const check = document.createElement('input');
+                    check.type = 'checkbox';
+                    check.className = 'wh-check';
+                    check.dataset.index = items.indexOf(item);
+                    div.appendChild(check);
 
+                    // 图片或视频
+                    if (item.type === 'gif') {
+                        const video = document.createElement('video');
+                        video.src = item.data;
+                        video.muted = true;
+                        video.loop = true;
+                        video.autoplay = true;
+                        video.playsInline = true;
+                        video.onmouseenter = () => video.play();
+                        video.onmouseleave = () => video.pause();
+                        div.appendChild(video);
+                    } else {
+                        const img = document.createElement('img');
+                        img.src = item.data;
+                        img.alt = '表情';
+                        img.loading = 'lazy';
+                        div.appendChild(img);
+                    }
+
+                    // 下载按钮
+                    const downloadBtn = document.createElement('button');
+                    downloadBtn.className = 'wh-download';
+                    downloadBtn.textContent = '⬇️';
+                    downloadBtn.title = '下载到本地';
+                    downloadBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const link = document.createElement('a');
+                        link.href = item.data;
+                        const ext = item.type === 'gif' ? 'gif' : 'png';
+                        link.download = `表情_${item.size || 240}.${ext}`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        showToast('⬇️ 已下载');
+                    });
+                    div.appendChild(downloadBtn);
+
+                    // 删除按钮（单个）
                     const del = document.createElement('button');
                     del.className = 'wh-del';
                     del.textContent = '×';
@@ -1665,7 +1439,7 @@
                     });
                     div.appendChild(del);
 
-                    // 点击预览大图
+                    // 点击预览
                     div.addEventListener('click', () => {
                         window.open(item.data, '_blank');
                     });
@@ -1674,37 +1448,148 @@
                 }
             }
 
-            function clearWarehouse() {
-                if (getWarehouseItems().length === 0) {
-                    showToast('仓库已经是空的');
-                    return;
+            function getSelectedIndices() {
+                const checks = whGrid.querySelectorAll('.wh-check');
+                const indices = [];
+                checks.forEach((ch, idx) => {
+                    if (ch.checked) {
+                        const index = parseInt(ch.dataset.index, 10);
+                        if (!isNaN(index)) indices.push(index);
+                    }
+                });
+                return indices;
+            }
+
+            function downloadSelected() {
+                const items = getWarehouseItems();
+                const indices = getSelectedIndices();
+                if (indices.length === 0) { showToast('请先勾选要下载的表情'); return; }
+                indices.forEach(idx => {
+                    const item = items[idx];
+                    if (item) {
+                        const link = document.createElement('a');
+                        link.href = item.data;
+                        const ext = item.type === 'gif' ? 'gif' : 'png';
+                        link.download = `表情_${item.size || 240}.${ext}`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                });
+                showToast(`⬇️ 已下载 ${indices.length} 个文件`);
+            }
+
+            function deleteSelected() {
+                const items = getWarehouseItems();
+                const indices = getSelectedIndices();
+                if (indices.length === 0) { showToast('请先勾选要删除的表情'); return; }
+                if (!confirm(`确定删除选中的 ${indices.length} 个表情吗？`)) return;
+                // 从后往前删
+                const sortedIndices = indices.sort((a, b) => b - a);
+                for (const idx of sortedIndices) {
+                    items.splice(idx, 1);
                 }
-                if (confirm('确定要清空所有表情吗？')) {
+                saveWarehouseItems(items);
+                renderWarehouse();
+                showToast(`🗑️ 已删除 ${indices.length} 个`);
+            }
+
+            function clearWarehouse() {
+                if (getWarehouseItems().length === 0) { showToast('仓库已是空的'); return; }
+                if (confirm('确定清空全部表情吗？')) {
                     saveWarehouseItems([]);
                     renderWarehouse();
                     showToast('🗑️ 已清空仓库');
                 }
             }
 
-            // ---------- GIF 制作 ----------
+            // ----- 保存到仓库（从当前画布） -----
+            function saveToWarehouse() {
+                const { size } = getExportSettings();
+                const offscreen = document.createElement('canvas');
+                offscreen.width = size;
+                offscreen.height = size;
+                const offCtx = offscreen.getContext('2d');
+
+                const srcSize = state.canvasSize;
+                const scale = size / srcSize;
+
+                const grad = offCtx.createRadialGradient(size / 2, size / 2, 10, size / 2, size / 2, size * 0.7);
+                grad.addColorStop(0, '#fff5f7');
+                grad.addColorStop(1, '#fce8ee');
+                offCtx.fillStyle = grad;
+                offCtx.fillRect(0, 0, size, size);
+
+                if (state.image) {
+                    const img = state.image;
+                    const iw = img.width;
+                    const ih = img.height;
+                    const s = Math.min(size / iw, size / ih);
+                    const dw = iw * s;
+                    const dh = ih * s;
+                    const dx = (size - dw) / 2;
+                    const dy = (size - dh) / 2;
+                    offCtx.drawImage(img, dx, dy, dw, dh);
+                }
+
+                for (const t of state.texts) {
+                    const fs = Math.max(12, Math.round((t.fontSize || 32) * scale));
+                    offCtx.save();
+                    offCtx.textAlign = 'center';
+                    offCtx.textBaseline = 'middle';
+                    let font = '';
+                    if (t.bold) font += 'bold ';
+                    font += fs + 'px "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif';
+                    offCtx.font = font;
+                    const tx = t.x * scale;
+                    const ty = t.y * scale;
+                    if (t.stroke) {
+                        offCtx.lineWidth = Math.max(1.5, fs / 14);
+                        offCtx.strokeStyle = t.strokeColor || '#ffffff';
+                        offCtx.lineJoin = 'round';
+                        offCtx.lineCap = 'round';
+                        offCtx.strokeText(t.text, tx, ty);
+                    }
+                    offCtx.fillStyle = t.color || '#d45a7a';
+                    offCtx.fillText(t.text, tx, ty);
+                    offCtx.restore();
+                }
+
+                offscreen.toBlob((blob) => {
+                    if (!blob) { showToast('❌ 保存失败'); return; }
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const items = getWarehouseItems();
+                        items.push({
+                            type: 'image',
+                            data: e.target.result,
+                            size: size,
+                            time: Date.now(),
+                        });
+                        saveWarehouseItems(items);
+                        renderWarehouse();
+                        showToast('📦 已存入仓库');
+                    };
+                    reader.readAsDataURL(blob);
+                }, 'image/png');
+            }
+
+            // ----- GIF 制作 -----
             function loadVideo(file) {
                 if (!file) return;
                 state.videoFile = file;
                 if (state.videoURL) URL.revokeObjectURL(state.videoURL);
                 state.videoURL = URL.createObjectURL(file);
                 gifStatus.innerHTML = `📹 已加载: <span class="file-name">${file.name}</span>`;
-                // 创建 video 元素用于解码
                 const video = document.createElement('video');
                 video.src = state.videoURL;
                 video.muted = true;
                 video.preload = 'auto';
                 video.onloadeddata = () => {
                     state.videoElement = video;
-                    showToast('✅ 视频已加载，可生成 GIF');
+                    showToast('✅ 视频已加载');
                 };
-                video.onerror = () => {
-                    showToast('❌ 视频加载失败');
-                };
+                video.onerror = () => showToast('❌ 视频加载失败');
                 video.load();
             }
 
@@ -1715,13 +1600,10 @@
                 }
                 const video = state.videoElement;
                 const size = parseInt(gifSizeSelect.value, 10);
-
-                // 限制帧数
                 const maxFrames = 60;
-                const interval = 0.08; // 秒
+                const interval = 0.08;
                 const duration = Math.min(video.duration || 3, 3);
                 const totalFrames = Math.min(Math.floor(duration / interval), maxFrames);
-
                 if (totalFrames < 2) {
                     showToast('视频太短，请上传更长的视频');
                     return;
@@ -1748,21 +1630,16 @@
 
                 function addFrame() {
                     if (frameCount >= totalFrames || currentTime >= duration) {
-                        // 完成
                         gif.render();
                         return;
                     }
-
                     video.currentTime = currentTime;
                     video.addEventListener('seeked', function onSeek() {
                         video.removeEventListener('seeked', onSeek);
-                        // 绘制帧
                         offCtx.clearRect(0, 0, size, size);
-                        // 背景
                         offCtx.fillStyle = '#fff5f7';
                         offCtx.fillRect(0, 0, size, size);
 
-                        // 视频内容 (保持比例)
                         const vw = video.videoWidth || 640;
                         const vh = video.videoHeight || 480;
                         const scale = Math.min(size / vw, size / vh);
@@ -1772,9 +1649,9 @@
                         const dy = (size - dh) / 2;
                         offCtx.drawImage(video, dx, dy, dw, dh);
 
-                        // 添加水印 / 标记（可选）
+                        // 简单水印
                         offCtx.save();
-                        offCtx.fillStyle = 'rgba(255,255,255,0.5)';
+                        offCtx.fillStyle = 'rgba(255,255,255,0.4)';
                         offCtx.font = '12px sans-serif';
                         offCtx.textAlign = 'right';
                         offCtx.textBaseline = 'bottom';
@@ -1782,16 +1659,11 @@
                         offCtx.restore();
 
                         gif.addFrame(offscreen, { copy: true, delay: Math.round(interval * 1000) });
-
                         frameCount++;
                         currentTime += interval;
-                        // 递归下一帧
                         setTimeout(addFrame, 20);
                     });
-
-                    // 超时保护
                     setTimeout(() => {
-                        // 如果卡住，强制继续
                         if (frameCount < totalFrames) {
                             frameCount++;
                             currentTime += interval;
@@ -1817,7 +1689,7 @@
                     setTimeout(() => URL.revokeObjectURL(url), 5000);
                     showToast(`✅ GIF 已生成 ${size}x${size}`);
 
-                    // 同时存入仓库
+                    // 自动存入仓库
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         const items = getWarehouseItems();
@@ -1835,30 +1707,15 @@
 
                 // 开始
                 video.currentTime = 0;
-                video.addEventListener('loadeddata', function onLoad() {
-                    video.removeEventListener('loadeddata', onLoad);
-                    // 重置
-                    frameCount = 0;
-                    currentTime = 0;
-                    // 先确保视频准备好
-                    setTimeout(addFrame, 200);
-                });
-
-                // 如果已经 loaded，直接开始
                 if (video.readyState >= 3) {
-                    frameCount = 0;
-                    currentTime = 0;
                     setTimeout(addFrame, 200);
                 } else {
                     video.addEventListener('loadeddata', function onLoad() {
                         video.removeEventListener('loadeddata', onLoad);
-                        frameCount = 0;
-                        currentTime = 0;
                         setTimeout(addFrame, 200);
                     });
                 }
 
-                // 总超时
                 setTimeout(() => {
                     if (genGifBtn.disabled) {
                         genGifBtn.disabled = false;
@@ -1868,12 +1725,8 @@
                 }, 60000);
             }
 
-            // ---------- 画布交互（拖拽 & 选中） ----------
+            // ----- 画布交互（拖拽） -----
             function setupCanvasInteraction() {
-                let mouseDown = false;
-                let mouseX = 0,
-                    mouseY = 0;
-
                 function getCanvasCoords(e) {
                     const rect = canvas.getBoundingClientRect();
                     const scaleX = state.canvasSize / rect.width;
@@ -1887,12 +1740,15 @@
                     };
                 }
 
+                let mouseDown = false;
+                let mouseX = 0,
+                    mouseY = 0;
+
                 function onPointerDown(e) {
                     e.preventDefault();
                     const pos = getCanvasCoords(e);
                     mouseX = pos.x;
                     mouseY = pos.y;
-
                     const hitId = hitTestText(mouseX, mouseY);
                     if (hitId !== null) {
                         selectText(hitId);
@@ -1905,7 +1761,6 @@
                         }
                         canvas.style.cursor = 'grabbing';
                     } else {
-                        // 点击空白取消选中
                         state.selectedId = null;
                         renderTextList();
                         drawScene();
@@ -1917,7 +1772,6 @@
                     const pos = getCanvasCoords(e);
                     mouseX = pos.x;
                     mouseY = pos.y;
-
                     if (state.dragging && state.dragTargetId !== null) {
                         const t = state.texts.find(t => t.id === state.dragTargetId);
                         if (t) {
@@ -1926,7 +1780,6 @@
                             drawScene();
                         }
                     } else {
-                        // 悬停光标
                         const hitId = hitTestText(mouseX, mouseY);
                         canvas.style.cursor = hitId !== null ? 'grab' : 'default';
                     }
@@ -1941,140 +1794,166 @@
                     }
                 }
 
-                // 鼠标事件
                 canvas.addEventListener('mousedown', onPointerDown);
                 canvas.addEventListener('mousemove', onPointerMove);
                 canvas.addEventListener('mouseup', onPointerUp);
                 canvas.addEventListener('mouseleave', onPointerUp);
 
-                // 触摸事件
-                canvas.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    onPointerDown(e);
-                }, { passive: false });
-                canvas.addEventListener('touchmove', (e) => {
-                    e.preventDefault();
-                    onPointerMove(e);
-                }, { passive: false });
-                canvas.addEventListener('touchend', (e) => {
-                    e.preventDefault();
-                    onPointerUp(e);
-                }, { passive: false });
+                canvas.addEventListener('touchstart', (e) => { e.preventDefault();
+                    onPointerDown(e); }, { passive: false });
+                canvas.addEventListener('touchmove', (e) => { e.preventDefault();
+                    onPointerMove(e); }, { passive: false });
+                canvas.addEventListener('touchend', (e) => { e.preventDefault();
+                    onPointerUp(e); }, { passive: false });
             }
 
-            // ---------- 初始化尺寸选项 ----------
-            function initSizeQuality() {
-                // 尺寸
-                sizeGroup.querySelectorAll('.opt-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        sizeGroup.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        state.exportSize = parseInt(btn.dataset.value, 10);
-                    });
+            // ----- 功能切换 -----
+            function switchTab(tabId) {
+                tabBtns.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabId);
                 });
-
-                // 质量
-                qualityGroup.querySelectorAll('.opt-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        qualityGroup.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        state.quality = btn.dataset.value;
-                    });
+                Object.keys(panels).forEach(key => {
+                    panels[key].classList.toggle('active', key === tabId);
                 });
-
-                // 默认选中
-                const defaultSize = sizeGroup.querySelector('.opt-btn[data-value="240"]');
-                if (defaultSize) defaultSize.classList.add('active');
-                const defaultQ = qualityGroup.querySelector('.opt-btn[data-value="compressed"]');
-                if (defaultQ) defaultQ.classList.add('active');
-                state.exportSize = 240;
-                state.quality = 'compressed';
             }
 
-            // ---------- 初始化 ----------
+            // ----- 初始化 -----
             function init() {
-                // 画布尺寸
                 state.canvasSize = 600;
                 canvas.width = 600;
                 canvas.height = 600;
 
                 // 上传图片
-                imageUpload.addEventListener('change', (e) => {
+                const uploadInput = document.createElement('input');
+                uploadInput.type = 'file';
+                uploadInput.accept = 'image/*';
+                uploadInput.id = 'imageUpload';
+                uploadInput.style.display = 'none';
+                document.body.appendChild(uploadInput);
+
+                // 在预览区添加上传按钮（隐藏input，用触发）
+                const uploadBtn = document.createElement('button');
+                uploadBtn.textContent = '📤 上传图片';
+                uploadBtn.className = 'primary-btn outline';
+                uploadBtn.style.position = 'absolute';
+                uploadBtn.style.bottom = '16px';
+                uploadBtn.style.right = '16px';
+                uploadBtn.style.zIndex = '10';
+                uploadBtn.style.padding = '6px 16px';
+                uploadBtn.style.fontSize = '13px';
+                uploadBtn.style.borderRadius = '40px';
+                uploadBtn.style.background = 'rgba(255,255,255,0.6)';
+                uploadBtn.style.border = '1px solid rgba(255,180,195,0.3)';
+                uploadBtn.style.backdropFilter = 'blur(4px)';
+                uploadBtn.style.cursor = 'pointer';
+                uploadBtn.onclick = () => uploadInput.click();
+                wrapper.appendChild(uploadBtn);
+
+                uploadInput.addEventListener('change', (e) => {
                     if (e.target.files && e.target.files[0]) {
                         loadImage(e.target.files[0]);
                     }
                 });
 
-                clearImageBtn.addEventListener('click', clearImage);
+                // 清除图片按钮
+                const clearBtn = document.createElement('button');
+                clearBtn.textContent = '✕ 清除';
+                clearBtn.style.position = 'absolute';
+                clearBtn.style.bottom = '16px';
+                clearBtn.style.right = '130px';
+                clearBtn.style.zIndex = '10';
+                clearBtn.style.padding = '6px 16px';
+                clearBtn.style.fontSize = '13px';
+                clearBtn.style.borderRadius = '40px';
+                clearBtn.style.background = 'rgba(255,200,210,0.3)';
+                clearBtn.style.border = '1px solid rgba(255,180,195,0.2)';
+                clearBtn.style.backdropFilter = 'blur(4px)';
+                clearBtn.style.cursor = 'pointer';
+                clearBtn.onclick = clearImage;
+                wrapper.appendChild(clearBtn);
 
-                // 添加文字
-                addTextBtn.addEventListener('click', () => {
-                    addText(textInput.value);
-                });
+                // 文字添加
+                addTextBtn.addEventListener('click', () => addText(textInput.value));
                 textInput.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        addText(textInput.value);
-                    }
+                    if (e.key === 'Enter') { e.preventDefault();
+                        addText(textInput.value); }
                 });
 
-                // 样式变化
+                // 样式变更
                 textColor.addEventListener('input', updateSelectedStyle);
                 strokeColor.addEventListener('input', updateSelectedStyle);
                 boldCheck.addEventListener('change', updateSelectedStyle);
                 strokeCheck.addEventListener('change', updateSelectedStyle);
+                fontSizeSlider.addEventListener('input', () => {
+                    fontSizeLabel.textContent = fontSizeSlider.value;
+                    updateSelectedStyle();
+                });
 
-                // 导出 & 保存
+                // 导出设置
+                sizeGroup.querySelectorAll('.opt-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        sizeGroup.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                    });
+                });
+                qualityGroup.querySelectorAll('.opt-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        qualityGroup.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                    });
+                });
+
                 exportBtn.addEventListener('click', exportImage);
                 saveToWarehouseBtn.addEventListener('click', saveToWarehouse);
 
                 // GIF
                 videoUpload.addEventListener('change', (e) => {
-                    if (e.target.files && e.target.files[0]) {
-                        loadVideo(e.target.files[0]);
-                    }
+                    if (e.target.files && e.target.files[0]) loadVideo(e.target.files[0]);
                 });
                 genGifBtn.addEventListener('click', generateGIF);
 
                 // 仓库
                 clearWarehouseBtn.addEventListener('click', clearWarehouse);
+                downloadSelectedBtn.addEventListener('click', downloadSelected);
+                deleteSelectedBtn.addEventListener('click', deleteSelected);
 
-                // 初始化尺寸质量选择
-                initSizeQuality();
+                // 功能切换
+                tabBtns.forEach(btn => {
+                    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+                });
+
+                // 默认显示贴文字
+                switchTab('text');
 
                 // 画布交互
                 setupCanvasInteraction();
 
-                // 渲染仓库
-                renderWarehouse();
-
-                // 初始绘制
-                drawScene();
-
-                // 拖拽上传图片到预览区
-                wrapper.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    wrapper.classList.add('dragover');
-                });
-                wrapper.addEventListener('dragleave', () => {
-                    wrapper.classList.remove('dragover');
-                });
+                // 拖拽上传到预览区
+                wrapper.addEventListener('dragover', (e) => { e.preventDefault();
+                    wrapper.style.borderColor = '#ff8da1'; });
+                wrapper.addEventListener('dragleave', () => { wrapper.style.borderColor = 'rgba(255,150,180,0.30)'; });
                 wrapper.addEventListener('drop', (e) => {
                     e.preventDefault();
-                    wrapper.classList.remove('dragover');
+                    wrapper.style.borderColor = 'rgba(255,150,180,0.30)';
                     const files = e.dataTransfer.files;
                     if (files && files.length > 0) {
                         const file = files[0];
                         if (file.type.startsWith('image/')) {
                             loadImage(file);
-                            imageUpload.files = files;
+                            uploadInput.files = files;
                         } else {
                             showToast('请拖入图片文件');
                         }
                     }
                 });
 
-                // 添加示例文字
+                // 加载仓库
+                renderWarehouse();
+
+                // 初始绘制
+                drawScene();
+
+                // 示例文字
                 setTimeout(() => {
                     if (state.texts.length === 0) {
                         addText('✨ 你好呀');
@@ -2084,7 +1963,6 @@
                 console.log('🌸 表情包生成器已启动 | 制作人 KIKI');
             }
 
-            // 启动
             init();
 
         })();
