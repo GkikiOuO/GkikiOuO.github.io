@@ -64,17 +64,60 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+
+        /* ===== 右上角 — 图片 + 制作人信息 ===== */
         .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.45);
+            padding: 4px 16px 4px 8px;
+            border-radius: 60px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            box-shadow: 0 2px 12px rgba(255, 150, 180, 0.08);
+        }
+
+        /* ----- 右上角图片（可替换） ----- */
+        .header-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.70);
+            box-shadow: 0 2px 8px rgba(255, 130, 160, 0.15);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            background: #ffd9e2; /* 占位背景色 */
+            flex-shrink: 0;
+        }
+        .header-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 16px rgba(255, 130, 160, 0.30);
+        }
+
+        /* 头像加载失败时的备用样式 (由JS控制) */
+        .header-avatar-fallback {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffb6c1, #ff8da1);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #fff;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(255, 130, 160, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.70);
+        }
+
+        .header-right .maker-text {
             font-size: 15px;
             color: #7a4e5e;
-            background: rgba(255, 255, 255, 0.55);
-            padding: 5px 18px;
-            border-radius: 40px;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
             font-weight: 500;
+            white-space: nowrap;
         }
-        .header-right span {
+        .header-right .maker-text span {
             color: #b45374;
             font-weight: 600;
         }
@@ -853,77 +896,6 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* ===== 响应式 ===== */
-        @media (max-width: 1024px) {
-            .main-layout {
-                grid-template-columns: 1fr;
-                gap: 14px;
-            }
-            .text-sidebar {
-                max-height: 180px;
-            }
-            .app-container {
-                padding: 16px;
-            }
-        }
-        @media (max-width: 600px) {
-            .app-container {
-                padding: 10px;
-                border-radius: 28px;
-            }
-            .header-left h1 {
-                font-size: 20px;
-            }
-            .header-right {
-                font-size: 12px;
-                padding: 4px 14px;
-            }
-            .function-tabs .tab-btn {
-                padding: 5px 14px;
-                font-size: 12px;
-            }
-            .panel-container {
-                padding: 14px;
-            }
-            .style-row {
-                gap: 6px;
-            }
-            .style-row .font-size-control input[type="range"] {
-                width: 70px;
-            }
-            .export-options {
-                gap: 10px;
-            }
-            .action-row .primary-btn {
-                padding: 7px 16px;
-                font-size: 13px;
-                flex: 1;
-            }
-            .wh-grid {
-                grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-                gap: 10px;
-            }
-            .preview-actions {
-                bottom: 12px;
-                right: 12px;
-            }
-            .preview-actions .float-btn {
-                font-size: 11px;
-                padding: 3px 10px;
-            }
-            .gif-controls {
-                gap: 8px;
-            }
-            .gif-controls .gif-gen-btn {
-                padding: 5px 18px;
-                font-size: 13px;
-            }
-            .size-hint {
-                font-size: 11px;
-                padding: 4px 12px;
-            }
-        }
-
         /* ===== 预览模态框 ===== */
         .preview-modal {
             display: none;
@@ -997,23 +969,86 @@
             font-weight: 500;
         }
 
+        /* ===== 响应式 ===== */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+            .text-sidebar {
+                max-height: 180px;
+            }
+            .app-container {
+                padding: 16px;
+            }
+        }
         @media (max-width: 600px) {
-            .preview-modal {
-                padding: 12px;
+            .app-container {
+                padding: 10px;
+                border-radius: 28px;
             }
-            .preview-modal .modal-content {
-                padding: 12px;
+            .header-left h1 {
+                font-size: 20px;
             }
-            .preview-modal .modal-hint {
+            .header-right {
+                padding: 4px 12px 4px 6px;
+                gap: 8px;
+            }
+            .header-avatar {
+                width: 32px;
+                height: 32px;
+            }
+            .header-avatar-fallback {
+                width: 32px;
+                height: 32px;
+                font-size: 18px;
+            }
+            .header-right .maker-text {
+                font-size: 13px;
+            }
+            .function-tabs .tab-btn {
+                padding: 5px 14px;
                 font-size: 12px;
-                padding: 6px 12px;
             }
-            .preview-modal .modal-close {
-                width: 30px;
-                height: 30px;
-                font-size: 16px;
-                top: -8px;
-                right: -8px;
+            .panel-container {
+                padding: 14px;
+            }
+            .style-row {
+                gap: 6px;
+            }
+            .style-row .font-size-control input[type="range"] {
+                width: 70px;
+            }
+            .export-options {
+                gap: 10px;
+            }
+            .action-row .primary-btn {
+                padding: 7px 16px;
+                font-size: 13px;
+                flex: 1;
+            }
+            .wh-grid {
+                grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+                gap: 10px;
+            }
+            .preview-actions {
+                bottom: 12px;
+                right: 12px;
+            }
+            .preview-actions .float-btn {
+                font-size: 11px;
+                padding: 3px 10px;
+            }
+            .gif-controls {
+                gap: 8px;
+            }
+            .gif-controls .gif-gen-btn {
+                padding: 5px 18px;
+                font-size: 13px;
+            }
+            .size-hint {
+                font-size: 11px;
+                padding: 4px 12px;
             }
         }
     </style>
@@ -1042,7 +1077,24 @@
                 <span class="icon">🌸</span>
                 <h1>表情包生成器</h1>
             </div>
-            <div class="header-right">✦ 制作人：<span>KIKI</span></div>
+
+            <!-- ===== 右上角：图片 + 制作人信息 ===== -->
+            <div class="header-right">
+                <!-- ★★★ 右上角图片 — 替换 src 即可更换为自己的图片 ★★★ -->
+                <img
+                class="header-avatar"
+                id="headerAvatar"
+                src="https://api.dicebear.com/7.x/avataaars/svg?seed=KIKI&backgroundColor=ffd9e2"
+                alt="头像"
+                referrerpolicy="no-referrer"
+                crossorigin="anonymous"
+                onerror="this.style.display='none'; document.getElementById('avatarFallback').style.display='flex';"
+                />
+                <!-- 图片加载失败时的备用图标 -->
+                <span class="header-avatar-fallback" id="avatarFallback">🌸</span>
+
+                <span class="maker-text">✦ 制作人：<span>KIKI</span></span>
+            </div>
         </header>
 
         <!-- ===== 主布局 ===== -->
@@ -1571,10 +1623,8 @@
                     else if (bg === 'white') bgColor = '#ffffff';
                     offCtx.fillStyle = bgColor;
                     offCtx.fillRect(0, 0, size, size);
-                } else {
-                    // 透明背景：不绘制任何背景
-                    // 但为了预览时能看到，我们只在非透明时绘制
                 }
+                // 透明背景：不绘制任何背景
 
                 // 绘制图片
                 if (state.image) {
@@ -1630,10 +1680,8 @@
                     ext = 'png';
                 } else if (quality === 'compressed') {
                     if (bg === 'transparent') {
-                        // 透明背景只能用 PNG
                         mimeType = 'image/png';
                         ext = 'png';
-                        // 但我们可以使用 PNG 压缩级别
                     } else {
                         mimeType = 'image/jpeg';
                         qualityParam = 0.75;
