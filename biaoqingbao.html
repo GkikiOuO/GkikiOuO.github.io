@@ -78,7 +78,6 @@
             box-shadow: 0 2px 12px rgba(255, 150, 180, 0.08);
         }
 
-        /* ----- 右上角图片（可替换） ----- */
         .header-avatar {
             width: 40px;
             height: 40px;
@@ -87,7 +86,7 @@
             border: 2px solid rgba(255, 255, 255, 0.70);
             box-shadow: 0 2px 8px rgba(255, 130, 160, 0.15);
             transition: transform 0.25s ease, box-shadow 0.25s ease;
-            background: #ffd9e2; /* 占位背景色 */
+            background: #ffd9e2;
             flex-shrink: 0;
         }
         .header-avatar:hover {
@@ -95,7 +94,6 @@
             box-shadow: 0 4px 16px rgba(255, 130, 160, 0.30);
         }
 
-        /* 头像加载失败时的备用样式 (由JS控制) */
         .header-avatar-fallback {
             width: 40px;
             height: 40px;
@@ -219,6 +217,14 @@
         }
         .preview-actions .float-btn.danger {
             color: #b45374;
+        }
+        .preview-actions .float-btn.primary {
+            background: rgba(255, 140, 170, 0.25);
+            border-color: rgba(255, 140, 170, 0.3);
+            color: #b45374;
+        }
+        .preview-actions .float-btn.primary:hover {
+            background: rgba(255, 140, 170, 0.35);
         }
 
         /* ===== 文字侧边栏 ===== */
@@ -490,12 +496,12 @@
             color: #6b3a4a;
         }
         .style-row .font-size-control input[type="range"] {
-            width: 100px;
+            width: 140px;
             accent-color: #ff8da1;
             cursor: pointer;
         }
         .style-row .font-size-control .size-label {
-            min-width: 28px;
+            min-width: 36px;
             text-align: center;
             font-weight: 500;
             color: #b45374;
@@ -550,17 +556,6 @@
         }
         .export-options .opt-group .btn-group .opt-btn:hover:not(.active) {
             background: rgba(255, 255, 255, 0.3);
-        }
-
-        .export-options .opt-group select {
-            padding: 4px 12px;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 180, 195, 0.3);
-            background: rgba(255, 255, 255, 0.5);
-            font-size: 13px;
-            color: #4a2a3a;
-            outline: none;
-            cursor: pointer;
         }
 
         .action-row {
@@ -969,6 +964,252 @@
             font-weight: 500;
         }
 
+        /* ================================================================
+           图片编辑器模态框
+           ================================================================ */
+        .editor-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(16px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .editor-modal.active {
+            display: flex;
+        }
+
+        .editor-modal .editor-box {
+            background: rgba(255, 245, 247, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 24px 28px 28px;
+            max-width: 820px;
+            width: 100%;
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .editor-modal .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .editor-modal .editor-header .editor-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #6b3a4a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .editor-modal .editor-header .editor-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .editor-modal .editor-header .editor-actions button {
+            padding: 7px 22px;
+            border: none;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .editor-modal .editor-header .editor-actions .btn-confirm {
+            background: linear-gradient(135deg, #ff8da1, #f5728a);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(255, 100, 130, 0.25);
+        }
+        .editor-modal .editor-header .editor-actions .btn-confirm:hover {
+            transform: scale(1.04);
+            box-shadow: 0 6px 24px rgba(255, 100, 130, 0.35);
+        }
+        .editor-modal .editor-header .editor-actions .btn-cancel {
+            background: rgba(255, 255, 255, 0.5);
+            color: #6b3a4a;
+            border: 1px solid rgba(255, 180, 195, 0.3);
+        }
+        .editor-modal .editor-header .editor-actions .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .editor-modal .editor-canvas-wrap {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%;
+            background: rgba(240, 240, 245, 0.5);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .editor-modal .editor-canvas-wrap:active {
+            cursor: grabbing;
+        }
+
+        .editor-modal .editor-canvas-wrap canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 18px;
+            background: #f8f4f6;
+        }
+
+        /* 裁剪框覆盖层 — 使用 CSS 绘制 */
+        .editor-modal .crop-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            border-radius: 18px;
+        }
+
+        .editor-modal .crop-overlay .crop-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 72%;
+            height: 72%;
+            border: 2.5px solid rgba(255, 255, 255, 0.85);
+            border-radius: 12px;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+            pointer-events: none;
+        }
+
+        .editor-modal .crop-overlay .crop-box::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* 裁剪框角落标记 */
+        .editor-modal .crop-overlay .crop-box .corner {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-color: rgba(255, 255, 255, 0.9);
+            border-style: solid;
+            border-width: 0;
+            pointer-events: none;
+        }
+        .editor-modal .crop-overlay .crop-box .corner.tl {
+            top: -2px;
+            left: -2px;
+            border-top-width: 3px;
+            border-left-width: 3px;
+            border-radius: 3px 0 0 0;
+        }
+        .editor-modal .crop-overlay .crop-box .corner.tr {
+            top: -2px;
+            right: -2px;
+            border-top-width: 3px;
+            border-right-width: 3px;
+            border-radius: 0 3px 0 0;
+        }
+        .editor-modal .crop-overlay .crop-box .corner.bl {
+            bottom: -2px;
+            left: -2px;
+            border-bottom-width: 3px;
+            border-left-width: 3px;
+            border-radius: 0 0 0 3px;
+        }
+        .editor-modal .crop-overlay .crop-box .corner.br {
+            bottom: -2px;
+            right: -2px;
+            border-bottom-width: 3px;
+            border-right-width: 3px;
+            border-radius: 0 0 3px 0;
+        }
+
+        .editor-modal .editor-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .editor-modal .editor-footer .zoom-info {
+            font-size: 13px;
+            color: #7a4e5e;
+            background: rgba(255, 255, 255, 0.4);
+            padding: 4px 16px;
+            border-radius: 30px;
+        }
+
+        .editor-modal .editor-footer .zoom-info span {
+            font-weight: 600;
+            color: #b45374;
+        }
+
+        .editor-modal .editor-footer .zoom-controls {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .editor-modal .editor-footer .zoom-controls button {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 180, 195, 0.3);
+            background: rgba(255, 255, 255, 0.5);
+            color: #6b3a4a;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .editor-modal .editor-footer .zoom-controls button:hover {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: #ff8da1;
+        }
+
+        .editor-modal .editor-footer .zoom-controls .zoom-slider {
+            width: 100px;
+            accent-color: #ff8da1;
+            cursor: pointer;
+        }
+
         /* ===== 响应式 ===== */
         @media (max-width: 1024px) {
             .main-layout {
@@ -1017,7 +1258,7 @@
                 gap: 6px;
             }
             .style-row .font-size-control input[type="range"] {
-                width: 70px;
+                width: 90px;
             }
             .export-options {
                 gap: 10px;
@@ -1050,6 +1291,19 @@
                 font-size: 11px;
                 padding: 4px 12px;
             }
+            .editor-modal .editor-box {
+                padding: 16px;
+            }
+            .editor-modal .editor-header .editor-title {
+                font-size: 15px;
+            }
+            .editor-modal .editor-header .editor-actions button {
+                padding: 5px 14px;
+                font-size: 12px;
+            }
+            .editor-modal .editor-footer .zoom-controls .zoom-slider {
+                width: 60px;
+            }
         }
     </style>
 </head>
@@ -1068,6 +1322,39 @@
         </div>
     </div>
 
+    <!-- ===== 图片编辑器模态框 ===== -->
+    <div class="editor-modal" id="editorModal">
+        <div class="editor-box">
+            <div class="editor-header">
+                <div class="editor-title">✂️ 编辑图片</div>
+                <div class="editor-actions">
+                    <button class="btn-cancel" id="editorCancelBtn">取消</button>
+                    <button class="btn-confirm" id="editorConfirmBtn">✅ 确认裁剪</button>
+                </div>
+            </div>
+            <div class="editor-canvas-wrap" id="editorCanvasWrap">
+                <canvas id="editorCanvas" width="600" height="600"></canvas>
+                <div class="crop-overlay">
+                    <div class="crop-box" id="cropBox">
+                        <span class="corner tl"></span>
+                        <span class="corner tr"></span>
+                        <span class="corner bl"></span>
+                        <span class="corner br"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="editor-footer">
+                <div class="zoom-info">🔍 缩放: <span id="zoomLevelDisplay">100%</span></div>
+                <div class="zoom-controls">
+                    <button id="zoomOutBtn">−</button>
+                    <input type="range" class="zoom-slider" id="zoomSlider" min="30" max="300" value="100" />
+                    <button id="zoomInBtn">+</button>
+                    <button id="resetZoomBtn" style="width:auto; padding:0 12px; border-radius:30px; font-size:12px;">↺ 重置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ===== 主容器 ===== -->
     <div class="app-container">
 
@@ -1080,19 +1367,16 @@
 
             <!-- ===== 右上角：图片 + 制作人信息 ===== -->
             <div class="header-right">
-                <!-- ★★★ 右上角图片 — 替换 src 即可更换为自己的图片 ★★★ -->
                 <img
                 class="header-avatar"
                 id="headerAvatar"
-                src="https://api.dicebear.com/7.x/avataaars/svg?seed=KIKI&backgroundColor=ffd9e2"
+                src="https://bee-reg-ab.imagency.cn/p/2c2d5fa9ab876940740a72da94a8d380.png"
                 alt="头像"
                 referrerpolicy="no-referrer"
                 crossorigin="anonymous"
                 onerror="this.style.display='none'; document.getElementById('avatarFallback').style.display='flex';"
                 />
-                <!-- 图片加载失败时的备用图标 -->
                 <span class="header-avatar-fallback" id="avatarFallback">🌸</span>
-
                 <span class="maker-text">✦ 制作人：<span>KIKI</span></span>
             </div>
         </header>
@@ -1115,6 +1399,7 @@
                     <!-- 浮动按钮 -->
                     <div class="preview-actions">
                         <button class="float-btn" id="uploadImageBtn">📤 上传图片</button>
+                        <button class="float-btn primary" id="editImageBtn" style="display:none;">✂️ 编辑图片</button>
                         <button class="float-btn danger" id="clearImageBtn">✕ 清除</button>
                         <input type="file" id="imageUpload" accept="image/*" style="display:none;" />
                     </div>
@@ -1165,11 +1450,11 @@
                     </div>
                     <div class="font-size-control">
                         <span>字号</span>
-                        <input type="range" id="fontSizeSlider" min="16" max="80" value="32" step="1" />
+                        <input type="range" id="fontSizeSlider" min="16" max="200" value="32" step="1" />
                         <span class="size-label" id="fontSizeLabel">32</span>
                     </div>
                 </div>
-                <div class="panel-hint">💡 选中文字后调整样式，拖拽预览区文字移动位置</div>
+                <div class="panel-hint">💡 选中文字后调整样式，拖拽预览区文字移动位置 · 字号最大 200px</div>
             </div>
 
             <!-- ====== 导出设置面板 ====== -->
@@ -1269,6 +1554,7 @@
             const imageUpload = document.getElementById('imageUpload');
             const uploadImageBtn = document.getElementById('uploadImageBtn');
             const clearImageBtn = document.getElementById('clearImageBtn');
+            const editImageBtn = document.getElementById('editImageBtn');
 
             const textInput = document.getElementById('textInput');
             const addTextBtn = document.getElementById('addTextBtn');
@@ -1307,6 +1593,19 @@
 
             const toastEl = document.getElementById('toast');
 
+            // ----- 编辑器 DOM -----
+            const editorModal = document.getElementById('editorModal');
+            const editorCanvas = document.getElementById('editorCanvas');
+            const editorCtx = editorCanvas.getContext('2d');
+            const editorCanvasWrap = document.getElementById('editorCanvasWrap');
+            const editorConfirmBtn = document.getElementById('editorConfirmBtn');
+            const editorCancelBtn = document.getElementById('editorCancelBtn');
+            const zoomSlider = document.getElementById('zoomSlider');
+            const zoomLevelDisplay = document.getElementById('zoomLevelDisplay');
+            const zoomInBtn = document.getElementById('zoomInBtn');
+            const zoomOutBtn = document.getElementById('zoomOutBtn');
+            const resetZoomBtn = document.getElementById('resetZoomBtn');
+
             // ----- 功能切换 -----
             const tabBtns = document.querySelectorAll('.tab-btn');
             const panels = {
@@ -1336,6 +1635,21 @@
                 videoElement: null,
             };
 
+            // ----- 编辑器状态 -----
+            const editor = {
+                image: null, // 当前编辑的图片
+                scale: 1,
+                offsetX: 0,
+                offsetY: 0,
+                isDragging: false,
+                dragStartX: 0,
+                dragStartY: 0,
+                dragStartOffsetX: 0,
+                dragStartOffsetY: 0,
+                canvasSize: 600,
+                cropSize: 0, // 裁剪框尺寸 (像素)
+            };
+
             // ----- 工具 -----
             function showToast(msg, duration = 2600) {
                 toastEl.textContent = msg;
@@ -1347,17 +1661,15 @@
             }
 
             // ================================================================
-            //  绘图
+            //  绘图 (主画布)
             // ================================================================
             function drawScene() {
                 const w = state.canvasSize;
                 const h = state.canvasSize;
                 ctx.clearRect(0, 0, w, h);
 
-                // 透明网格背景 (仅在预览时显示，导出时不包含)
                 drawCheckerboard(ctx, w, h);
 
-                // 图片
                 if (state.image) {
                     const img = state.image;
                     const iw = img.width;
@@ -1370,15 +1682,16 @@
                     ctx.drawImage(img, dx, dy, dw, dh);
                 }
 
-                // 文字
                 for (const t of state.texts) {
                     drawText(t);
                 }
 
                 placeholder.style.display = (state.image || state.texts.length > 0) ? 'none' : 'block';
+
+                // 编辑按钮显隐
+                editImageBtn.style.display = state.image ? 'inline-block' : 'none';
             }
 
-            // 绘制棋盘格，表示透明背景
             function drawCheckerboard(ctx, w, h) {
                 const size = 20;
                 ctx.save();
@@ -1412,7 +1725,6 @@
                 ctx.fillStyle = t.color || '#d45a7a';
                 ctx.fillText(t.text, t.x, t.y);
 
-                // 选中边框
                 if (state.selectedId === t.id) {
                     const metrics = ctx.measureText(t.text);
                     const tw = metrics.width;
@@ -1570,7 +1882,9 @@
                         state.image = img;
                         state.imageDataURL = e.target.result;
                         drawScene();
-                        showToast('✅ 图片已上传');
+                        showToast('✅ 图片已上传，可点击「编辑图片」裁剪缩放');
+                        // 显示编辑按钮
+                        editImageBtn.style.display = 'inline-block';
                     };
                     img.onerror = () => showToast('❌ 图片加载失败');
                     img.src = e.target.result;
@@ -1584,10 +1898,304 @@
                 drawScene();
                 showToast('已清除图片');
                 imageUpload.value = '';
+                editImageBtn.style.display = 'none';
             }
 
             // ================================================================
-            //  导出核心 —— 支持透明背景
+            //  图片编辑器
+            // ================================================================
+            function openEditor() {
+                if (!state.image) {
+                    showToast('请先上传图片');
+                    return;
+                }
+
+                // 初始化编辑器状态
+                editor.image = state.image;
+                editor.canvasSize = 600;
+                editor.cropSize = editor.canvasSize * 0.72; // 裁剪框大小
+
+                // 计算初始缩放，使图片完整显示在裁剪框内
+                const img = editor.image;
+                const imgAspect = img.width / img.height;
+                const cropAspect = 1; // 1:1
+                let fitScale;
+                if (imgAspect > cropAspect) {
+                    fitScale = editor.cropSize / img.width;
+                } else {
+                    fitScale = editor.cropSize / img.height;
+                }
+                // 稍微放大一点，让用户有调整空间
+                editor.scale = fitScale * 1.0;
+                editor.offsetX = editor.canvasSize / 2;
+                editor.offsetY = editor.canvasSize / 2;
+
+                // 更新滑块
+                const zoomPercent = Math.round(editor.scale / fitScale * 100);
+                zoomSlider.value = Math.min(300, Math.max(30, zoomPercent));
+
+                editorModal.classList.add('active');
+                renderEditor();
+            }
+
+            function closeEditor() {
+                editorModal.classList.remove('active');
+                editor.isDragging = false;
+            }
+
+            function renderEditor() {
+                const size = editor.canvasSize;
+                const c = editorCtx;
+                c.clearRect(0, 0, size, size);
+
+                // 背景
+                c.fillStyle = '#f8f4f6';
+                c.fillRect(0, 0, size, size);
+
+                // 绘制棋盘格（透明背景指示）
+                drawEditorCheckerboard(c, size);
+
+                // 绘制图片
+                if (editor.image) {
+                    const img = editor.image;
+                    const s = editor.scale;
+                    const cx = editor.offsetX;
+                    const cy = editor.offsetY;
+                    const iw = img.width * s;
+                    const ih = img.height * s;
+                    const dx = cx - iw / 2;
+                    const dy = cy - ih / 2;
+                    c.drawImage(img, dx, dy, iw, ih);
+                }
+
+                // 裁剪框由 CSS 覆盖层绘制，不需要在 canvas 上画
+            }
+
+            function drawEditorCheckerboard(c, size) {
+                const s = 18;
+                for (let x = 0; x < size; x += s) {
+                    for (let y = 0; y < size; y += s) {
+                        const isEven = (Math.floor(x / s) + Math.floor(y / s)) % 2 === 0;
+                        c.fillStyle = isEven ? 'rgba(200,200,200,0.20)' : 'rgba(235,235,235,0.20)';
+                        c.fillRect(x, y, s, s);
+                    }
+                }
+            }
+
+            function applyCrop() {
+                if (!editor.image) return;
+
+                const size = editor.canvasSize;
+                const cropSize = editor.cropSize;
+                const halfCrop = cropSize / 2;
+
+                // 裁剪区域在画布中的位置 (裁剪框中心在画布中心)
+                const cropX = (size - cropSize) / 2;
+                const cropY = (size - cropSize) / 2;
+
+                // 创建离屏 canvas 来提取裁剪区域
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = cropSize;
+                tempCanvas.height = cropSize;
+                const tempCtx = tempCanvas.getContext('2d');
+
+                // 绘制裁剪区域
+                tempCtx.save();
+                // 将裁剪区域从 editorCanvas 复制到 tempCanvas
+                // 需要考虑到图片的变换 (scale, offset)
+                // 最简单的方式：在 tempCtx 中应用相同的变换，然后绘制图片
+                tempCtx.clearRect(0, 0, cropSize, cropSize);
+
+                // 透明背景
+                // 绘制图片在 tempCanvas 上，应用相同的变换，但坐标需要映射
+                const img = editor.image;
+                const s = editor.scale;
+                const cx = editor.offsetX;
+                const cy = editor.offsetY;
+
+                // 计算图片在 editorCanvas 中的位置
+                const imgW = img.width * s;
+                const imgH = img.height * s;
+                const imgDX = cx - imgW / 2;
+                const imgDY = cy - imgH / 2;
+
+                // 裁剪区域相对于图片的位置
+                const srcX = cropX - imgDX;
+                const srcY = cropY - imgDY;
+
+                // 使用 drawImage 裁剪
+                tempCtx.drawImage(
+                    img,
+                    srcX / s, srcY / s, // 源图片坐标 (原始尺寸)
+                    cropSize / s, cropSize / s, // 源图片尺寸
+                    0, 0, cropSize, cropSize // 目标位置
+                );
+
+                tempCtx.restore();
+
+                // 将裁剪后的图片转换为 Image 对象
+                const croppedDataURL = tempCanvas.toDataURL('image/png');
+                const croppedImg = new Image();
+                croppedImg.onload = () => {
+                    state.image = croppedImg;
+                    state.imageDataURL = croppedDataURL;
+                    closeEditor();
+                    drawScene();
+                    showToast('✅ 图片已裁剪');
+                    editImageBtn.style.display = 'inline-block';
+                };
+                croppedImg.onerror = () => {
+                    showToast('❌ 裁剪失败');
+                };
+                croppedImg.src = croppedDataURL;
+            }
+
+            // ----- 编辑器交互 -----
+            function setupEditorInteraction() {
+                let isDragging = false;
+                let startX = 0,
+                    startY = 0;
+                let startOffsetX = 0,
+                    startOffsetY = 0;
+
+                function getPos(e) {
+                    const rect = editorCanvas.getBoundingClientRect();
+                    const scaleX = editor.canvasSize / rect.width;
+                    const scaleY = editor.canvasSize / rect.height;
+                    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                    if (clientX == null) return { x: 0, y: 0 };
+                    return {
+                        x: (clientX - rect.left) * scaleX,
+                        y: (clientY - rect.top) * scaleY,
+                    };
+                }
+
+                function onPointerDown(e) {
+                    e.preventDefault();
+                    const pos = getPos(e);
+                    isDragging = true;
+                    startX = pos.x;
+                    startY = pos.y;
+                    startOffsetX = editor.offsetX;
+                    startOffsetY = editor.offsetY;
+                    editorCanvasWrap.style.cursor = 'grabbing';
+                }
+
+                function onPointerMove(e) {
+                    e.preventDefault();
+                    if (!isDragging) return;
+                    const pos = getPos(e);
+                    const dx = pos.x - startX;
+                    const dy = pos.y - startY;
+                    editor.offsetX = startOffsetX + dx;
+                    editor.offsetY = startOffsetY + dy;
+                    renderEditor();
+                }
+
+                function onPointerUp(e) {
+                    if (isDragging) {
+                        isDragging = false;
+                        editorCanvasWrap.style.cursor = 'grab';
+                    }
+                }
+
+                // 鼠标事件
+                editorCanvas.addEventListener('mousedown', onPointerDown);
+                window.addEventListener('mousemove', onPointerMove);
+                window.addEventListener('mouseup', onPointerUp);
+
+                // 触摸事件
+                editorCanvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    onPointerDown(e);
+                }, { passive: false });
+                window.addEventListener('touchmove', (e) => {
+                    if (isDragging) {
+                        e.preventDefault();
+                        onPointerMove(e);
+                    }
+                }, { passive: false });
+                window.addEventListener('touchend', (e) => {
+                    if (isDragging) {
+                        onPointerUp(e);
+                    }
+                }, { passive: false });
+
+                // 滚轮缩放
+                editorCanvasWrap.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    const delta = e.deltaY > 0 ? -0.08 : 0.08;
+                    const newScale = editor.scale * (1 + delta);
+                    // 限制缩放范围
+                    const minScale = 0.1;
+                    const maxScale = 5.0;
+                    if (newScale < minScale || newScale > maxScale) return;
+
+                    // 以鼠标位置为中心缩放
+                    const rect = editorCanvas.getBoundingClientRect();
+                    const scaleX = editor.canvasSize / rect.width;
+                    const scaleY = editor.canvasSize / rect.height;
+                    const mx = (e.clientX - rect.left) * scaleX;
+                    const my = (e.clientY - rect.top) * scaleY;
+
+                    // 计算缩放前后鼠标位置对应的图片坐标
+                    const oldScale = editor.scale;
+                    const newScaleClamped = Math.min(maxScale, Math.max(minScale, newScale));
+
+                    // 调整偏移量使得鼠标位置对应的图片点不变
+                    const ratio = newScaleClamped / oldScale;
+                    editor.offsetX = mx + (editor.offsetX - mx) * ratio;
+                    editor.offsetY = my + (editor.offsetY - my) * ratio;
+                    editor.scale = newScaleClamped;
+
+                    // 更新滑块
+                    const fitScale = getFitScale();
+                    const zoomPercent = Math.round(editor.scale / fitScale * 100);
+                    zoomSlider.value = Math.min(300, Math.max(30, zoomPercent));
+                    zoomLevelDisplay.textContent = Math.round(zoomPercent) + '%';
+
+                    renderEditor();
+                }, { passive: false });
+            }
+
+            function getFitScale() {
+                if (!editor.image) return 1;
+                const img = editor.image;
+                const cropSize = editor.cropSize;
+                const imgAspect = img.width / img.height;
+                let fitScale;
+                if (imgAspect > 1) {
+                    fitScale = cropSize / img.width;
+                } else {
+                    fitScale = cropSize / img.height;
+                }
+                return fitScale;
+            }
+
+            function updateZoomFromSlider() {
+                const val = parseInt(zoomSlider.value, 10);
+                const fitScale = getFitScale();
+                const newScale = fitScale * (val / 100);
+                // 限制范围
+                const clampedScale = Math.min(5.0, Math.max(0.1, newScale));
+                editor.scale = clampedScale;
+                zoomLevelDisplay.textContent = Math.round(val) + '%';
+                renderEditor();
+            }
+
+            function resetZoom() {
+                const fitScale = getFitScale();
+                editor.scale = fitScale;
+                editor.offsetX = editor.canvasSize / 2;
+                editor.offsetY = editor.canvasSize / 2;
+                zoomSlider.value = 100;
+                zoomLevelDisplay.textContent = '100%';
+                renderEditor();
+            }
+
+            // ================================================================
+            //  导出核心
             // ================================================================
             function getExportSettings() {
                 let size = 240;
@@ -1605,7 +2213,6 @@
                 return { size, bg, quality };
             }
 
-            // 渲染导出画布（用于导出和预览）
             function renderExportCanvas(size, bg, quality) {
                 const offscreen = document.createElement('canvas');
                 offscreen.width = size;
@@ -1615,7 +2222,6 @@
                 const srcSize = state.canvasSize;
                 const scale = size / srcSize;
 
-                // 绘制背景（根据选择）
                 const isTransparent = (bg === 'transparent');
                 if (!isTransparent) {
                     let bgColor = '#ffffff';
@@ -1624,9 +2230,7 @@
                     offCtx.fillStyle = bgColor;
                     offCtx.fillRect(0, 0, size, size);
                 }
-                // 透明背景：不绘制任何背景
 
-                // 绘制图片
                 if (state.image) {
                     const img = state.image;
                     const iw = img.width;
@@ -1639,7 +2243,6 @@
                     offCtx.drawImage(img, dx, dy, dw, dh);
                 }
 
-                // 绘制文字
                 for (const t of state.texts) {
                     const fs = Math.max(10, Math.round((t.fontSize || 32) * scale));
                     offCtx.save();
@@ -1666,7 +2269,6 @@
                 return offscreen;
             }
 
-            // 导出下载
             function exportImage() {
                 const { size, bg, quality } = getExportSettings();
                 const offscreen = renderExportCanvas(size, bg, quality);
@@ -1687,7 +2289,7 @@
                         qualityParam = 0.75;
                         ext = 'jpg';
                     }
-                } else { // low
+                } else {
                     if (bg === 'transparent') {
                         mimeType = 'image/png';
                         ext = 'png';
@@ -1714,7 +2316,6 @@
                 }, mimeType, qualityParam);
             }
 
-            // 预览保存（在新窗口/模态框打开，方便长按保存）
             function previewExport() {
                 const { size, bg, quality } = getExportSettings();
                 const offscreen = renderExportCanvas(size, bg, quality);
@@ -1743,23 +2344,14 @@
                 offscreen.toBlob((blob) => {
                     if (!blob) { showToast('❌ 预览失败'); return; }
                     const url = URL.createObjectURL(blob);
-                    // 使用模态框展示
                     previewImage.src = url;
                     previewImage.style.display = 'block';
                     previewVideo.style.display = 'none';
                     previewVideo.pause();
                     previewModal.classList.add('active');
-                    // 点击模态框背景关闭
                     previewModal.onclick = (e) => {
-                        if (e.target === previewModal) {
-                            closePreviewModal();
-                        }
+                        if (e.target === previewModal) closePreviewModal();
                     };
-                    // 清理 URL
-                    const cleanup = () => {
-                        setTimeout(() => URL.revokeObjectURL(url), 10000);
-                    };
-                    cleanup();
                 }, mimeType, qualityParam);
             }
 
@@ -1772,7 +2364,6 @@
                 previewVideo.pause();
             }
 
-            // 保存到仓库
             function saveToWarehouse() {
                 const { size, bg, quality } = getExportSettings();
                 const offscreen = renderExportCanvas(size, bg, quality);
@@ -1850,13 +2441,11 @@
                         div.appendChild(img);
                     }
 
-                    // 尺寸标签
                     const sizeBadge = document.createElement('span');
                     sizeBadge.className = 'wh-size-badge';
                     sizeBadge.textContent = `${item.size || 240}px`;
                     div.appendChild(sizeBadge);
 
-                    // 下载
                     const downloadBtn = document.createElement('button');
                     downloadBtn.className = 'wh-download';
                     downloadBtn.textContent = '⬇️';
@@ -1874,7 +2463,6 @@
                     });
                     div.appendChild(downloadBtn);
 
-                    // 删除
                     const del = document.createElement('button');
                     del.className = 'wh-del';
                     del.textContent = '×';
@@ -1892,7 +2480,6 @@
                     div.appendChild(del);
 
                     div.addEventListener('click', () => {
-                        // 预览仓库中的表情
                         if (item.type === 'gif') {
                             previewVideo.src = item.data;
                             previewVideo.style.display = 'block';
@@ -2037,7 +2624,6 @@
                     video.addEventListener('seeked', function onSeek() {
                         video.removeEventListener('seeked', onSeek);
                         offCtx.clearRect(0, 0, size, size);
-                        // 白色背景（GIF 推荐白色背景）
                         offCtx.fillStyle = '#ffffff';
                         offCtx.fillRect(0, 0, size, size);
 
@@ -2050,7 +2636,6 @@
                         const dy = (size - dh) / 2;
                         offCtx.drawImage(video, dx, dy, dw, dh);
 
-                        // 水印
                         offCtx.save();
                         offCtx.fillStyle = 'rgba(200,200,200,0.3)';
                         offCtx.font = '12px sans-serif';
@@ -2090,7 +2675,6 @@
                     setTimeout(() => URL.revokeObjectURL(url), 5000);
                     showToast(`✅ GIF 已生成 ${size}x${size}`);
 
-                    // 自动存入仓库
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         const items = getWarehouseItems();
@@ -2106,7 +2690,6 @@
                     reader.readAsDataURL(blob);
                 });
 
-                // 开始
                 video.currentTime = 0;
                 if (video.readyState >= 3) {
                     setTimeout(addFrame, 200);
@@ -2222,6 +2805,12 @@
                 canvas.width = 600;
                 canvas.height = 600;
 
+                // 编辑器初始化
+                editorCanvas.width = 600;
+                editorCanvas.height = 600;
+                editor.canvasSize = 600;
+                editor.cropSize = 600 * 0.72;
+
                 // 上传图片
                 uploadImageBtn.addEventListener('click', () => imageUpload.click());
                 imageUpload.addEventListener('change', (e) => {
@@ -2231,6 +2820,7 @@
                 });
 
                 clearImageBtn.addEventListener('click', clearImage);
+                editImageBtn.addEventListener('click', openEditor);
 
                 // 文字
                 addTextBtn.addEventListener('click', () => addText(textInput.value));
@@ -2248,7 +2838,7 @@
                     updateSelectedStyle();
                 });
 
-                // 导出设置 - 尺寸
+                // 导出设置
                 sizeGroup.querySelectorAll('.opt-btn').forEach(btn => {
                     btn.addEventListener('click', () => {
                         sizeGroup.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
@@ -2257,7 +2847,6 @@
                     });
                 });
 
-                // 导出设置 - 背景
                 bgGroup.querySelectorAll('.opt-btn').forEach(btn => {
                     btn.addEventListener('click', () => {
                         bgGroup.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
@@ -2265,7 +2854,6 @@
                     });
                 });
 
-                // 导出设置 - 质量
                 qualityGroup.querySelectorAll('.opt-btn').forEach(btn => {
                     btn.addEventListener('click', () => {
                         qualityGroup.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
@@ -2277,7 +2865,7 @@
                 previewBtn.addEventListener('click', previewExport);
                 saveToWarehouseBtn.addEventListener('click', saveToWarehouse);
 
-                // 预览模态框关闭
+                // 预览模态框
                 previewModalClose.addEventListener('click', closePreviewModal);
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') closePreviewModal();
@@ -2298,12 +2886,39 @@
                 tabBtns.forEach(btn => {
                     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
                 });
-
-                // 默认显示贴文字
                 switchTab('text');
 
                 // 画布交互
                 setupCanvasInteraction();
+
+                // 编辑器交互
+                setupEditorInteraction();
+
+                // 编辑器按钮
+                editorConfirmBtn.addEventListener('click', applyCrop);
+                editorCancelBtn.addEventListener('click', closeEditor);
+                zoomSlider.addEventListener('input', updateZoomFromSlider);
+                zoomInBtn.addEventListener('click', () => {
+                    zoomSlider.value = Math.min(300, parseInt(zoomSlider.value, 10) + 10);
+                    updateZoomFromSlider();
+                });
+                zoomOutBtn.addEventListener('click', () => {
+                    zoomSlider.value = Math.max(30, parseInt(zoomSlider.value, 10) - 10);
+                    updateZoomFromSlider();
+                });
+                resetZoomBtn.addEventListener('click', resetZoom);
+
+                // 键盘关闭编辑器
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && editorModal.classList.contains('active')) {
+                        closeEditor();
+                    }
+                    if (e.key === 'Enter' && editorModal.classList.contains('active')) {
+                        if (e.ctrlKey || e.metaKey) {
+                            applyCrop();
+                        }
+                    }
+                });
 
                 // 拖拽上传
                 wrapper.addEventListener('dragover', (e) => { e.preventDefault();
@@ -2324,16 +2939,10 @@
                     }
                 });
 
-                // 更新尺寸提示
                 updateSizeHint();
-
-                // 加载仓库
                 renderWarehouse();
-
-                // 初始绘制
                 drawScene();
 
-                // 示例文字
                 setTimeout(() => {
                     if (state.texts.length === 0) {
                         addText('✨ 你好呀');
@@ -2341,6 +2950,7 @@
                 }, 300);
 
                 console.log('🌸 表情包生成器已启动 | 制作人 KIKI');
+                console.log('📌 新功能：图片裁剪缩放 · 字号最大 200px');
             }
 
             function updateSizeHint() {
